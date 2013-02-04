@@ -1,5 +1,5 @@
 name: google_blogger_v3_api
-version: 0.1.7
+version: 0.1.8
 description: Auto-generated client library for accessing the blogger v3 API
 homepage: https://github.com/dart-gde/discovery_api_dart_client_generator
 authors:
