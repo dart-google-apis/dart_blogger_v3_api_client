@@ -14,13 +14,13 @@ class BlogsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Blog> get(String blogId, {int maxPosts, Map optParams}) {
-    var completer = new Completer();
+  async.Future<Blog> get(core.String blogId, {core.int maxPosts, core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (maxPosts != null) queryParams["maxPosts"] = maxPosts;
@@ -52,13 +52,13 @@ class BlogsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Blog> getByUrl(String url, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<Blog> getByUrl(core.String url, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/byurl";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (url == null) paramErrors.add("url is required");
     if (url != null) queryParams["url"] = url;
     if (optParams != null) {
@@ -89,13 +89,13 @@ class BlogsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<BlogList> listByUser(String userId, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<BlogList> listByUser(core.String userId, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "users/{userId}/blogs";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (userId == null) paramErrors.add("userId is required");
     if (userId != null) urlParams["userId"] = userId;
     if (optParams != null) {
@@ -136,13 +136,13 @@ class CommentsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Comment> get(String blogId, String postId, String commentId, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<Comment> get(core.String blogId, core.String postId, core.String commentId, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}/comments/{commentId}";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (commentId == null) paramErrors.add("commentId is required");
@@ -189,13 +189,13 @@ class CommentsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<CommentList> list(String blogId, String postId, {String endDate, bool fetchBodies, int maxResults, String pageToken, String startDate, Map optParams}) {
-    var completer = new Completer();
+  async.Future<CommentList> list(core.String blogId, core.String postId, {core.String endDate, core.bool fetchBodies, core.int maxResults, core.String pageToken, core.String startDate, core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}/comments";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (endDate != null) queryParams["endDate"] = endDate;
@@ -241,13 +241,13 @@ class PagesResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Page> get(String blogId, String pageId, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<Page> get(core.String blogId, core.String pageId, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/pages/{pageId}";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (pageId == null) paramErrors.add("pageId is required");
@@ -282,13 +282,13 @@ class PagesResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<PageList> list(String blogId, {bool fetchBodies, Map optParams}) {
-    var completer = new Completer();
+  async.Future<PageList> list(core.String blogId, {core.bool fetchBodies, core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/pages";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (fetchBodies != null) queryParams["fetchBodies"] = fetchBodies;
@@ -328,13 +328,13 @@ class PostsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Map> delete(String blogId, String postId, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<core.Map> delete(core.String blogId, core.String postId, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (postId == null) paramErrors.add("postId is required");
@@ -371,13 +371,13 @@ class PostsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Post> get(String blogId, String postId, {int maxComments, Map optParams}) {
-    var completer = new Completer();
+  async.Future<Post> get(core.String blogId, core.String postId, {core.int maxComments, core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (maxComments != null) queryParams["maxComments"] = maxComments;
@@ -415,13 +415,13 @@ class PostsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Post> getByPath(String blogId, String path, {int maxComments, Map optParams}) {
-    var completer = new Completer();
+  async.Future<Post> getByPath(core.String blogId, core.String path, {core.int maxComments, core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/bypath";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (maxComments != null) queryParams["maxComments"] = maxComments;
@@ -457,13 +457,13 @@ class PostsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Post> insert(Post request, String blogId, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<Post> insert(Post request, core.String blogId, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (optParams != null) {
@@ -506,13 +506,13 @@ class PostsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<PostList> list(String blogId, {String endDate, bool fetchBodies, String labels, int maxResults, String pageToken, String startDate, Map optParams}) {
-    var completer = new Completer();
+  async.Future<PostList> list(core.String blogId, {core.String endDate, core.bool fetchBodies, core.String labels, core.int maxResults, core.String pageToken, core.String startDate, core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (endDate != null) queryParams["endDate"] = endDate;
@@ -553,13 +553,13 @@ class PostsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Post> patch(Post request, String blogId, String postId, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<Post> patch(Post request, core.String blogId, core.String postId, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (postId == null) paramErrors.add("postId is required");
@@ -594,13 +594,13 @@ class PostsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<PostList> search(String blogId, String q, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<PostList> search(core.String blogId, core.String q, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/search";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (q == null) paramErrors.add("q is required");
@@ -637,13 +637,13 @@ class PostsResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<Post> update(Post request, String blogId, String postId, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<Post> update(Post request, core.String blogId, core.String postId, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (postId == null) paramErrors.add("postId is required");
@@ -682,13 +682,13 @@ class UsersResource extends Resource {
    *
    * [optParams] - Additional query parameters
    */
-  Future<User> get(String userId, {Map optParams}) {
-    var completer = new Completer();
+  async.Future<User> get(core.String userId, {core.Map optParams}) {
+    var completer = new async.Completer();
     var url = "users/{userId}";
-    var urlParams = new Map();
-    var queryParams = new Map();
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
 
-    var paramErrors = new List();
+    var paramErrors = new core.List();
     if (userId == null) paramErrors.add("userId is required");
     if (userId != null) urlParams["userId"] = userId;
     if (optParams != null) {

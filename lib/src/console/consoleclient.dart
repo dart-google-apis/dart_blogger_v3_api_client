@@ -12,8 +12,8 @@ abstract class ConsoleClient extends Client {
   /**
    * Sends a HTTPRequest using [method] (usually GET or POST) to [requestUrl] using the specified [urlParams] and [queryParams]. Optionally include a [body] in the request.
    */
-  Future request(String requestUrl, String method, {String body, String contentType:"application/json", Map urlParams, Map queryParams}) {
-    var completer = new Completer();
+  async.Future request(core.String requestUrl, core.String method, {core.String body, core.String contentType:"application/json", core.Map urlParams, core.Map queryParams}) {
+    var completer = new async.Completer();
 
     if (urlParams == null) urlParams = {};
     if (queryParams == null) queryParams = {};
@@ -33,38 +33,38 @@ abstract class ConsoleClient extends Client {
 
     var url = new oauth2.UrlPattern(path).generate(urlParams, queryParams);
 
-    Future clientCallback(http.Client client) {
+    async.Future clientCallback(http.Client client) {
       // A dummy completer is used for the 'withClient' method, this should
       // go away after refactoring withClient in oauth2 package
-      var clientDummyCompleter = new Completer();
+      var clientDummyCompleter = new async.Completer();
 
       if (method.toLowerCase() == "get") {
         client.get(url).then((http.Response response) {
           var data = JSON.parse(response.body);
           completer.complete(data);
           clientDummyCompleter.complete(null);
-        }, onError: (AsyncError error) {
+        }, onError: (async.AsyncError error) {
           completer.completeError(new APIRequestException("onError: $error"));
         });
 
       } else if (method.toLowerCase() == "post" || method.toLowerCase() == "put" || method.toLowerCase() == "patch") {
         // Workaround since http.Client does not properly support post for google apis
-        var postHttpClient = new HttpClient();
+        var postHttpClient = new io.HttpClient();
 
         // On connection request set the content type and key if available.
-        postHttpClient.openUrl(method, Uri.parse(url)).then((HttpClientRequest request) {
-          request.headers.set(HttpHeaders.CONTENT_TYPE, contentType);
+        postHttpClient.openUrl(method, uri.Uri.parse(url)).then((io.HttpClientRequest request) {
+          request.headers.set(io.HttpHeaders.CONTENT_TYPE, contentType);
           if (makeAuthRequests && _auth != null) {
-            request.headers.set(HttpHeaders.AUTHORIZATION, "Bearer ${_auth.credentials.accessToken}");
+            request.headers.set(io.HttpHeaders.AUTHORIZATION, "Bearer ${_auth.credentials.accessToken}");
           }
 
           request.write(body);
           return request.close();
         }, onError: (error) => completer.completeError(new APIRequestException("POST HttpClientRequest error: $error")))
-        .then((HttpClientResponse response) {
+        .then((io.HttpClientResponse response) {
           // On connection response read in data from stream, on close parse as json and return.
-          StringBuffer onResponseBody = new StringBuffer();
-          response.transform(new StringDecoder()).listen((String data) => onResponseBody.write(data), 
+          core.StringBuffer onResponseBody = new core.StringBuffer();
+          response.transform(new io.StringDecoder()).listen((core.String data) => onResponseBody.write(data), 
               onError: (error) => completer.completeError(new APIRequestException("POST stream error: $error")), 
               onDone: () {
                 var data = JSON.parse(onResponseBody.toString());
@@ -74,18 +74,18 @@ abstract class ConsoleClient extends Client {
               });
         }, onError: (error) => completer.completeError(new APIRequestException("POST HttpClientResponse error: $error")));
       } else if (method.toLowerCase() == "delete") {
-        var deleteHttpClient = new HttpClient();
+        var deleteHttpClient = new io.HttpClient();
 
-        deleteHttpClient.openUrl(method, Uri.parse(url)).then((HttpClientRequest request) {
+        deleteHttpClient.openUrl(method, uri.Uri.parse(url)).then((io.HttpClientRequest request) {
           // On connection request set the content type and key if available.
-          request.headers.set(HttpHeaders.CONTENT_TYPE, contentType);
+          request.headers.set(io.HttpHeaders.CONTENT_TYPE, contentType);
           if (makeAuthRequests && _auth != null) {
-            request.headers.set(HttpHeaders.AUTHORIZATION, "Bearer ${_auth.credentials.accessToken}");
+            request.headers.set(io.HttpHeaders.AUTHORIZATION, "Bearer ${_auth.credentials.accessToken}");
           }
 
           return request.close();
         }, onError: (error) => completer.completeError(new APIRequestException("DELETE HttpClientRequest error: $error")))
-        .then((HttpClientResponse response) {
+        .then((io.HttpClientResponse response) {
           // On connection response read in data from stream, on close parse as json and return.
           // TODO: response.statusCode should be checked for errors.
           completer.complete({});
