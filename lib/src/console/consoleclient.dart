@@ -43,7 +43,7 @@ abstract class ConsoleClient extends Client {
           var data = JSON.parse(response.body);
           completer.complete(data);
           clientDummyCompleter.complete(null);
-        }, onError: (async.AsyncError error) {
+        }, onError: (error) {
           completer.completeError(new APIRequestException("onError: $error"));
         });
 
