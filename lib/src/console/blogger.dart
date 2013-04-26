@@ -4,16 +4,16 @@ part of blogger_v3_api_console;
 /** API for access to the data within Blogger. */
 class Blogger extends ConsoleClient {
 
-  BlogsResource _blogs;
-  BlogsResource get blogs => _blogs;
-  CommentsResource _comments;
-  CommentsResource get comments => _comments;
-  PagesResource _pages;
-  PagesResource get pages => _pages;
-  PostsResource _posts;
-  PostsResource get posts => _posts;
-  UsersResource _users;
-  UsersResource get users => _users;
+  BlogsResource_ _blogs;
+  BlogsResource_ get blogs => _blogs;
+  CommentsResource_ _comments;
+  CommentsResource_ get comments => _comments;
+  PagesResource_ _pages;
+  PagesResource_ get pages => _pages;
+  PostsResource_ _posts;
+  PostsResource_ get posts => _posts;
+  UsersResource_ _users;
+  UsersResource_ get users => _users;
 
   /** OAuth Scope2: Manage your Blogger account */
   static const core.String BLOGGER_SCOPE = "https://www.googleapis.com/auth/blogger";
@@ -73,10 +73,10 @@ class Blogger extends ConsoleClient {
   Blogger([oauth2.OAuth2Console auth]) : super(auth) {
     basePath = "/blogger/v3/";
     rootUrl = "https://www.googleapis.com:443/";
-    _blogs = new BlogsResource(this);
-    _comments = new CommentsResource(this);
-    _pages = new PagesResource(this);
-    _posts = new PostsResource(this);
-    _users = new UsersResource(this);
+    _blogs = new BlogsResource_(this);
+    _comments = new CommentsResource_(this);
+    _pages = new PagesResource_(this);
+    _posts = new PostsResource_(this);
+    _users = new UsersResource_(this);
   }
 }
