@@ -5,7 +5,7 @@ part of blogger_v3_api_browser;
  */
 abstract class BrowserClient extends Client {
 
-  oauth.OAuth2 _auth;
+  final oauth.OAuth2 _auth;
   core.bool _jsClientLoaded = false;
 
   BrowserClient([oauth.OAuth2 this._auth]) : super();
@@ -15,27 +15,27 @@ abstract class BrowserClient extends Client {
    */
   async.Future<core.bool> _loadJsClient() {
     var completer = new async.Completer();
-    
+
     if (_jsClientLoaded) {
       completer.complete(true);
       return completer.future;
     }
-    
+
     js.scoped((){
       js.context.handleClientLoad =  new js.Callback.once(() {
         _jsClientLoaded = true;
         completer.complete(true);
       });
     });
-    
+
     html.ScriptElement script = new html.ScriptElement();
     script.src = "http://apis.google.com/js/client.js?onload=handleClientLoad";
     script.type = "text/javascript";
     html.document.body.children.add(script);
-    
+
     return completer.future;
   }
-  
+
   /**
    * Makes a request via the JS Client Library to circumvent CORS-problems
    */
@@ -45,11 +45,11 @@ abstract class BrowserClient extends Client {
     requestData["path"] = requestUrl;
     requestData["method"] = method;
     requestData["headers"] = new core.Map();
-    
+
     if (queryParams != null) {
       requestData["params"] = queryParams;
     }
-    
+
     if (body != null) {
       requestData["body"] = body;
       requestData["headers"]["Content-Type"] = contentType;
@@ -57,7 +57,7 @@ abstract class BrowserClient extends Client {
     if (makeAuthRequests && _auth != null && _auth.token != null) {
       requestData["headers"]["Authorization"] = "${_auth.token.type} ${_auth.token.data}";
     }
-    
+
     js.scoped(() {
       var request = js.context.gapi.client.request(js.map(requestData));
       var callback = new js.Callback.once((jsonResp, rawResp) {
@@ -66,7 +66,7 @@ abstract class BrowserClient extends Client {
           if (raw["gapiRequest"]["data"]["status"] >= 400) {
             completer.completeError(new APIRequestException("JS Client - ${raw["gapiRequest"]["data"]["status"]} ${raw["gapiRequest"]["data"]["statusText"]} - ${raw["gapiRequest"]["data"]["body"]}"));
           } else {
-            completer.complete({});              
+            completer.complete({});
           }
         } else {
           completer.complete(js.context.JSON.stringify(jsonResp));
@@ -74,7 +74,7 @@ abstract class BrowserClient extends Client {
       });
       request.execute(callback);
     });
-    
+
     return completer.future;
   }
 
@@ -133,7 +133,7 @@ abstract class BrowserClient extends Client {
           if (request.responseText != null) {
             var errorJson;
             try {
-              errorJson = JSON.parse(request.responseText); 
+              errorJson = JSON.parse(request.responseText);
             } on core.FormatException {
               errorJson = null;
             }

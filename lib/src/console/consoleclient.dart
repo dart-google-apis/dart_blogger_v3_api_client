@@ -5,7 +5,7 @@ part of blogger_v3_api_console;
  */
 abstract class ConsoleClient extends Client {
 
-  oauth2.OAuth2Console _auth; 
+  oauth2.OAuth2Console _auth;
 
   ConsoleClient([oauth2.OAuth2Console this._auth]) : super();
 
@@ -52,7 +52,7 @@ abstract class ConsoleClient extends Client {
         var postHttpClient = new io.HttpClient();
 
         // On connection request set the content type and key if available.
-        postHttpClient.openUrl(method, uri.Uri.parse(url)).then((io.HttpClientRequest request) {
+        postHttpClient.openUrl(method, core.Uri.parse(url)).then((io.HttpClientRequest request) {
           request.headers.set(io.HttpHeaders.CONTENT_TYPE, contentType);
           if (makeAuthRequests && _auth != null) {
             request.headers.set(io.HttpHeaders.AUTHORIZATION, "Bearer ${_auth.credentials.accessToken}");
@@ -64,8 +64,8 @@ abstract class ConsoleClient extends Client {
         .then((io.HttpClientResponse response) {
           // On connection response read in data from stream, on close parse as json and return.
           core.StringBuffer onResponseBody = new core.StringBuffer();
-          response.transform(new io.StringDecoder()).listen((core.String data) => onResponseBody.write(data), 
-              onError: (error) => completer.completeError(new APIRequestException("POST stream error: $error")), 
+          response.transform(new io.StringDecoder()).listen((core.String data) => onResponseBody.write(data),
+              onError: (error) => completer.completeError(new APIRequestException("POST stream error: $error")),
               onDone: () {
                 var data = JSON.parse(onResponseBody.toString());
                 completer.complete(data);
@@ -76,7 +76,7 @@ abstract class ConsoleClient extends Client {
       } else if (method.toLowerCase() == "delete") {
         var deleteHttpClient = new io.HttpClient();
 
-        deleteHttpClient.openUrl(method, uri.Uri.parse(url)).then((io.HttpClientRequest request) {
+        deleteHttpClient.openUrl(method, core.Uri.parse(url)).then((io.HttpClientRequest request) {
           // On connection request set the content type and key if available.
           request.headers.set(io.HttpHeaders.CONTENT_TYPE, contentType);
           if (makeAuthRequests && _auth != null) {

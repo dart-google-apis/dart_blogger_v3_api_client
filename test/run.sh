@@ -6,9 +6,9 @@ set -e
 # Type Analysis
 
 echo
-echo "dart_analyzer lib/*.dart"
+echo "dartanalyzer lib/*.dart"
 
-results=`dart_analyzer lib/*.dart 2>&1`
+results=`dartanalyzer lib/*.dart 2>&1`
 
 echo "$results"
 

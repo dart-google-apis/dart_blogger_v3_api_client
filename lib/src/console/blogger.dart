@@ -72,7 +72,7 @@ class Blogger extends ConsoleClient {
 
   Blogger([oauth2.OAuth2Console auth]) : super(auth) {
     basePath = "/blogger/v3/";
-    rootUrl = "https://www.googleapis.com:443/";
+    rootUrl = "https://www.googleapis.com/";
     _blogs = new BlogsResource_(this);
     _comments = new CommentsResource_(this);
     _pages = new PagesResource_(this);

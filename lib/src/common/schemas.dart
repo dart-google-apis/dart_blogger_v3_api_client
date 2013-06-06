@@ -1247,7 +1247,7 @@ class PostReplies {
   core.String selfLink;
 
   /** The count of comments on this post. */
-  core.String totalItems;
+  core.int totalItems;
 
   /** Create new PostReplies from JSON data */
   PostReplies.fromJson(core.Map json) {
