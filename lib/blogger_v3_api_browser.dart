@@ -10,6 +10,5 @@ import "dart:json" as JSON;
 import "package:js/js.dart" as js;
 import "package:google_oauth2_client/google_oauth2_browser.dart" as oauth;
 
-part "src/browser/browserclient.dart";
+part "src/browser/browser_client.dart";
 part "src/browser/blogger.dart";
-

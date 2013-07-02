@@ -22,7 +22,7 @@ abstract class BrowserClient extends Client {
     }
 
     js.scoped((){
-      js.context.handleClientLoad =  new js.Callback.once(() {
+      js.context["handleClientLoad"] =  new js.Callback.once(() {
         _jsClientLoaded = true;
         completer.complete(true);
       });
@@ -59,7 +59,7 @@ abstract class BrowserClient extends Client {
     }
 
     js.scoped(() {
-      var request = js.context.gapi.client.request(js.map(requestData));
+      var request = js.context["gapi"]["client"]["request"](js.map(requestData));
       var callback = new js.Callback.once((jsonResp, rawResp) {
         if (jsonResp == null || (jsonResp is core.bool && jsonResp == false)) {
           var raw = JSON.parse(rawResp);
@@ -69,7 +69,7 @@ abstract class BrowserClient extends Client {
             completer.complete({});
           }
         } else {
-          completer.complete(js.context.JSON.stringify(jsonResp));
+          completer.complete(js.context["JSON"]["stringify"](jsonResp));
         }
       });
       request.execute(callback);
@@ -102,7 +102,46 @@ abstract class BrowserClient extends Client {
     }
     var url = new oauth.UrlPattern(path).generate(urlParams, queryParams);
 
-    request.onLoadEnd.listen((_) {
+    void handleError() {
+      if (request.status == 0) {
+        _loadJsClient().then((v) {
+          if (requestUrl.substring(0,1) == "/") {
+            path = requestUrl;
+          } else {
+            path ="$basePath$requestUrl";
+          }
+          url = new oauth.UrlPattern(path).generate(urlParams, {});
+          _makeJsClientRequest(url, method, body: body, contentType: contentType, queryParams: queryParams)
+            .then((response) {
+              var data = JSON.parse(response);
+              completer.complete(data);
+            })
+            .catchError((e) {
+              completer.completeError(e);
+              return true;
+            });
+        });
+      } else {
+        var error = "";
+        if (request.responseText != null) {
+          var errorJson;
+          try {
+            errorJson = JSON.parse(request.responseText);
+          } on core.FormatException {
+            errorJson = null;
+          }
+          if (errorJson != null && errorJson.containsKey("error")) {
+            error = "${errorJson["error"]["code"]} ${errorJson["error"]["message"]}";
+          }
+        }
+        if (error == "") {
+          error = "${request.status} ${request.statusText}";
+        }
+        completer.completeError(new APIRequestException(error));
+      }
+    }
+
+    request.onLoad.listen((_) {
       if (request.status > 0 && request.status < 400) {
         var data = {};
         if (!request.responseText.isEmpty) {
@@ -110,44 +149,11 @@ abstract class BrowserClient extends Client {
         }
         completer.complete(data);
       } else {
-        if (request.status == 0) {
-          _loadJsClient().then((v) {
-            if (requestUrl.substring(0,1) == "/") {
-              path = requestUrl;
-            } else {
-              path ="$basePath$requestUrl";
-            }
-            url = new oauth.UrlPattern(path).generate(urlParams, {});
-            _makeJsClientRequest(url, method, body: body, contentType: contentType, queryParams: queryParams)
-              .then((response) {
-                var data = JSON.parse(response);
-                completer.complete(data);
-              })
-              .catchError((e) {
-                completer.completeError(e);
-                return true;
-              });
-          });
-        } else {
-          var error = "";
-          if (request.responseText != null) {
-            var errorJson;
-            try {
-              errorJson = JSON.parse(request.responseText);
-            } on core.FormatException {
-              errorJson = null;
-            }
-            if (errorJson != null && errorJson.containsKey("error")) {
-              error = "${errorJson["error"]["code"]} ${errorJson["error"]["message"]}";
-            }
-          }
-          if (error == "") {
-            error = "${request.status} ${request.statusText}";
-          }
-          completer.completeError(new APIRequestException(error));
-        }
+        handleError();
       }
     });
+
+    request.onError.listen((_) => handleError());
 
     request.open(method, url);
     request.setRequestHeader("Content-Type", contentType);

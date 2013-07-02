@@ -15,7 +15,6 @@ class BlogsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<Blog> get(core.String blogId, {core.int maxPosts, core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -33,16 +32,13 @@ class BlogsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new Blog.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new Blog.fromJson(data));
   }
 
   /**
@@ -53,7 +49,6 @@ class BlogsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<Blog> getByUrl(core.String url, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/byurl";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -70,16 +65,13 @@ class BlogsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new Blog.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new Blog.fromJson(data));
   }
 
   /**
@@ -90,7 +82,6 @@ class BlogsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<BlogList> listByUser(core.String userId, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "users/{userId}/blogs";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -107,16 +98,13 @@ class BlogsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new BlogList.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new BlogList.fromJson(data));
   }
 }
 
@@ -137,7 +125,6 @@ class CommentsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<Comment> get(core.String blogId, core.String postId, core.String commentId, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}/comments/{commentId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -158,16 +145,13 @@ class CommentsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new Comment.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new Comment.fromJson(data));
   }
 
   /**
@@ -190,7 +174,6 @@ class CommentsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<CommentList> list(core.String blogId, core.String postId, {core.String endDate, core.bool fetchBodies, core.int maxResults, core.String pageToken, core.String startDate, core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}/comments";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -214,16 +197,13 @@ class CommentsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new CommentList.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new CommentList.fromJson(data));
   }
 }
 
@@ -242,7 +222,6 @@ class PagesResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<Page> get(core.String blogId, core.String pageId, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/pages/{pageId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -261,16 +240,13 @@ class PagesResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new Page.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new Page.fromJson(data));
   }
 
   /**
@@ -283,7 +259,6 @@ class PagesResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<PageList> list(core.String blogId, {core.bool fetchBodies, core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/pages";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -301,16 +276,13 @@ class PagesResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new PageList.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new PageList.fromJson(data));
   }
 }
 
@@ -329,7 +301,6 @@ class PostsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<core.Map> delete(core.String blogId, core.String postId, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -348,16 +319,12 @@ class PostsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "DELETE", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(data))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response;
   }
 
   /**
@@ -372,7 +339,6 @@ class PostsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<Post> get(core.String blogId, core.String postId, {core.int maxComments, core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -392,16 +358,13 @@ class PostsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new Post.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new Post.fromJson(data));
   }
 
   /**
@@ -416,7 +379,6 @@ class PostsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<Post> getByPath(core.String blogId, core.String path, {core.int maxComments, core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/bypath";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -436,16 +398,13 @@ class PostsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new Post.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new Post.fromJson(data));
   }
 
   /**
@@ -458,7 +417,6 @@ class PostsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<Post> insert(Post request, core.String blogId, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -475,16 +433,13 @@ class PostsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "POST", body: request.toString(), urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new Post.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new Post.fromJson(data));
   }
 
   /**
@@ -507,7 +462,6 @@ class PostsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<PostList> list(core.String blogId, {core.String endDate, core.bool fetchBodies, core.String labels, core.int maxResults, core.String pageToken, core.String startDate, core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -530,16 +484,13 @@ class PostsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new PostList.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new PostList.fromJson(data));
   }
 
   /**
@@ -554,7 +505,6 @@ class PostsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<Post> patch(Post request, core.String blogId, core.String postId, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -573,16 +523,13 @@ class PostsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "PATCH", body: request.toString(), urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new Post.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new Post.fromJson(data));
   }
 
   /**
@@ -595,7 +542,6 @@ class PostsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<PostList> search(core.String blogId, core.String q, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/search";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -614,16 +560,13 @@ class PostsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new PostList.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new PostList.fromJson(data));
   }
 
   /**
@@ -638,7 +581,6 @@ class PostsResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<Post> update(Post request, core.String blogId, core.String postId, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "blogs/{blogId}/posts/{postId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -657,16 +599,13 @@ class PostsResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "PUT", body: request.toString(), urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new Post.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new Post.fromJson(data));
   }
 }
 
@@ -683,7 +622,6 @@ class UsersResource_ extends Resource {
    * [optParams] - Additional query parameters
    */
   async.Future<User> get(core.String userId, {core.Map optParams}) {
-    var completer = new async.Completer();
     var url = "users/{userId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -700,16 +638,13 @@ class UsersResource_ extends Resource {
     }
 
     if (!paramErrors.isEmpty) {
-      completer.completeError(new core.ArgumentError(paramErrors.join(" / ")));
-      return completer.future;
+      throw new core.ArgumentError(paramErrors.join(" / "));
     }
 
     var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
-    response
-      .then((data) => completer.complete(new User.fromJson(data)))
-      .catchError((e) { completer.completeError(e); return true; });
-    return completer.future;
+    return response
+      .then((data) => new User.fromJson(data));
   }
 }
 

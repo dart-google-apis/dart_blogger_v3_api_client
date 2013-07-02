@@ -1261,7 +1261,11 @@ class PostReplies {
       selfLink = json["selfLink"];
     }
     if (json.containsKey("totalItems")) {
-      totalItems = json["totalItems"];
+      if(json["totalItems"] is core.String){
+        totalItems = core.int.parse(json["totalItems"]);
+      }else{
+        totalItems = json["totalItems"];
+      }
     }
   }
 
