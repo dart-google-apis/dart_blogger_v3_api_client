@@ -1,9 +1,59 @@
-part of blogger_v3_api_client;
+part of blogger_v3_api;
 
-class BlogsResource_ extends Resource {
+class BlogUserInfosResource_ {
 
-  BlogsResource_(Client client) : super(client) {
+  final Client _client;
+
+  BlogUserInfosResource_(Client client) :
+      _client = client;
+
+  /**
+   * Gets one blog and user info pair by blogId and userId.
+   *
+   * [userId] - ID of the user whose blogs are to be fetched. Either the word 'self' (sans quote marks) or the user's profile identifier.
+   *
+   * [blogId] - The ID of the blog to get.
+   *
+   * [maxPosts] - Maximum number of posts to pull back with the blog.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<BlogUserInfo> get(core.String userId, core.String blogId, {core.int maxPosts, core.Map optParams}) {
+    var url = "users/{userId}/blogs/{blogId}";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (maxPosts != null) queryParams["maxPosts"] = maxPosts;
+    if (userId == null) paramErrors.add("userId is required");
+    if (userId != null) urlParams["userId"] = userId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new BlogUserInfo.fromJson(data));
   }
+}
+
+class BlogsResource_ {
+
+  final Client _client;
+
+  BlogsResource_(Client client) :
+      _client = client;
 
   /**
    * Gets one blog by id.
@@ -108,10 +158,12 @@ class BlogsResource_ extends Resource {
   }
 }
 
-class CommentsResource_ extends Resource {
+class CommentsResource_ {
 
-  CommentsResource_(Client client) : super(client) {
-  }
+  final Client _client;
+
+  CommentsResource_(Client client) :
+      _client = client;
 
   /**
    * Gets one comment by id.
@@ -207,10 +259,12 @@ class CommentsResource_ extends Resource {
   }
 }
 
-class PagesResource_ extends Resource {
+class PagesResource_ {
 
-  PagesResource_(Client client) : super(client) {
-  }
+  final Client _client;
+
+  PagesResource_(Client client) :
+      _client = client;
 
   /**
    * Gets one blog page by id.
@@ -286,10 +340,12 @@ class PagesResource_ extends Resource {
   }
 }
 
-class PostsResource_ extends Resource {
+class PostsResource_ {
 
-  PostsResource_(Client client) : super(client) {
-  }
+  final Client _client;
+
+  PostsResource_(Client client) :
+      _client = client;
 
   /**
    * Delete a post by id.
@@ -412,7 +468,7 @@ class PostsResource_ extends Resource {
    *
    * [request] - Post to send in this request
    *
-   * [blogId] - ID of the blog to fetch the post from.
+   * [blogId] - ID of the blog to add the post to.
    *
    * [optParams] - Additional query parameters
    */
@@ -609,10 +665,12 @@ class PostsResource_ extends Resource {
   }
 }
 
-class UsersResource_ extends Resource {
+class UsersResource_ {
 
-  UsersResource_(Client client) : super(client) {
-  }
+  final Client _client;
+
+  UsersResource_(Client client) :
+      _client = client;
 
   /**
    * Gets one user by id.

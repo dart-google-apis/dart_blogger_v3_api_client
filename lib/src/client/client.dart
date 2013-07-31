@@ -1,66 +1,70 @@
-part of blogger_v3_api_client;
+part of blogger_v3_api;
 
-/**
- * Base class for all API clients, offering generic methods for HTTP Requests to the API
- */
-abstract class Client {
-  core.String basePath;
-  core.String rootUrl;
-  core.bool makeAuthRequests;
-  core.Map params;
+abstract class Client extends ClientBase {
+  core.String basePath = "/blogger/v3/";
+  core.String rootUrl = "https://www.googleapis.com/";
 
-  static const _boundary = "-------314159265358979323846";
-  static const _delimiter = "\r\n--$_boundary\r\n";
-  static const _closeDelim = "\r\n--$_boundary--";
+  //
+  // Resources
+  //
 
-  Client() {
-    params = new core.Map();
-    makeAuthRequests = false;
-  }
+  BlogUserInfosResource_ get blogUserInfos => new BlogUserInfosResource_(this);
+  BlogsResource_ get blogs => new BlogsResource_(this);
+  CommentsResource_ get comments => new CommentsResource_(this);
+  PagesResource_ get pages => new PagesResource_(this);
+  PostsResource_ get posts => new PostsResource_(this);
+  UsersResource_ get users => new UsersResource_(this);
 
-  /**
-   * Sends a HTTPRequest using [method] (usually GET or POST) to [requestUrl] using the specified [urlParams] and [queryParams]. Optionally include a [body] in the request.
-   */
-  async.Future request(core.String requestUrl, core.String method, {core.String body, core.String contentType:"application/json", core.Map urlParams, core.Map queryParams});
+  //
+  // Parameters
+  //
 
   /**
-   * Joins [content] (encoded as Base64-String) with specified [contentType] and additional request [body] into one multipart-body and send a HTTPRequest with [method] (usually POST) to [requestUrl]
+   * Data format for the response.
+   * Added as queryParameter for each request.
    */
-  async.Future upload(core.String requestUrl, core.String method, core.String body, core.String content, core.String contentType, {core.Map urlParams, core.Map queryParams}) {
-    var multiPartBody = new core.StringBuffer();
-    if (contentType == null || contentType.isEmpty) {
-      contentType = "application/octet-stream";
-    }
-    multiPartBody
-    ..write(_delimiter)
-    ..write("Content-Type: application/json\r\n\r\n")
-    ..write(body)
-    ..write(_delimiter)
-    ..write("Content-Type: ")
-    ..write(contentType)
-    ..write("\r\n")
-    ..write("Content-Transfer-Encoding: base64\r\n")
-    ..write("\r\n")
-    ..write(content)
-    ..write(_closeDelim);
+  core.String get alt => params["alt"];
+  set alt(core.String value) => params["alt"] = value;
 
-    return request(requestUrl, method, body: multiPartBody.toString(), contentType: "multipart/mixed; boundary=\"$_boundary\"", urlParams: urlParams, queryParams: queryParams);
-  }
+  /**
+   * Selector specifying which fields to include in a partial response.
+   * Added as queryParameter for each request.
+   */
+  core.String get fields => params["fields"];
+  set fields(core.String value) => params["fields"] = value;
+
+  /**
+   * API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+   * Added as queryParameter for each request.
+   */
+  core.String get key => params["key"];
+  set key(core.String value) => params["key"] = value;
+
+  /**
+   * OAuth 2.0 token for the current user.
+   * Added as queryParameter for each request.
+   */
+  core.String get oauth_token => params["oauth_token"];
+  set oauth_token(core.String value) => params["oauth_token"] = value;
+
+  /**
+   * Returns response with indentations and line breaks.
+   * Added as queryParameter for each request.
+   */
+  core.bool get prettyPrint => params["prettyPrint"];
+  set prettyPrint(core.bool value) => params["prettyPrint"] = value;
+
+  /**
+   * Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+   * Added as queryParameter for each request.
+   */
+  core.String get quotaUser => params["quotaUser"];
+  set quotaUser(core.String value) => params["quotaUser"] = value;
+
+  /**
+   * IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+   * Added as queryParameter for each request.
+   */
+  core.String get userIp => params["userIp"];
+  set userIp(core.String value) => params["userIp"] = value;
 }
-
-/// Base-class for all API Resources
-abstract class Resource {
-  /// The [Client] to be used for all requests
-  final Client _client;
-
-  /// Create a new Resource, using the specified [Client] for requests
-  Resource(Client this._client);
-}
-
-/// Exception thrown when the HTTP Request to the API failed
-class APIRequestException implements core.Exception {
-  final core.String msg;
-  const APIRequestException([this.msg]);
-  core.String toString() => (msg == null) ? "APIRequestException" : "APIRequestException: $msg";
-}
-

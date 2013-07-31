@@ -1,35 +1,43 @@
-part of blogger_v3_api_browser;
+library cloud_api.browser;
+
+import "dart:async";
+import "dart:html" as html;
+import "dart:json" as JSON;
+import "package:js/js.dart" as js;
+import "package:google_oauth2_client/google_oauth2_browser.dart" as oauth;
+
+import 'cloud_api.dart';
 
 /**
  * Base class for all Browser API clients, offering generic methods for HTTP Requests to the API
  */
-abstract class BrowserClient extends Client {
+abstract class BrowserClient implements ClientBase {
 
-  final oauth.OAuth2 _auth;
-  core.bool _jsClientLoaded = false;
+  static const _corsCallback = 'handleCLientLoad';
 
-  BrowserClient([oauth.OAuth2 this._auth]) : super();
+  oauth.OAuth2 get auth;
+  bool _jsClientLoaded = false;
 
   /**
    * Loads the JS Client Library to make CORS-Requests
    */
-  async.Future<core.bool> _loadJsClient() {
-    var completer = new async.Completer();
+  Future _loadJsClient() {
 
     if (_jsClientLoaded) {
-      completer.complete(true);
-      return completer.future;
+      return new Future.value();
     }
 
+    var completer = new Completer();
+
     js.scoped((){
-      js.context["handleClientLoad"] =  new js.Callback.once(() {
+      js.context[_corsCallback] =  new js.Callback.once(() {
         _jsClientLoaded = true;
-        completer.complete(true);
+        completer.complete();
       });
     });
 
     html.ScriptElement script = new html.ScriptElement();
-    script.src = "http://apis.google.com/js/client.js?onload=handleClientLoad";
+    script.src = "https://apis.google.com/js/client.js?onload=$_corsCallback";
     script.type = "text/javascript";
     html.document.body.children.add(script);
 
@@ -39,12 +47,11 @@ abstract class BrowserClient extends Client {
   /**
    * Makes a request via the JS Client Library to circumvent CORS-problems
    */
-  async.Future _makeJsClientRequest(core.String requestUrl, core.String method, {core.String body, core.String contentType, core.Map queryParams}) {
-    var completer = new async.Completer();
-    var requestData = new core.Map();
+  Future<Map<String, dynamic>> _makeJsClientRequest(String requestUrl, String method, {String body, String contentType, Map queryParams}) {
+    var requestData = new Map();
     requestData["path"] = requestUrl;
     requestData["method"] = method;
-    requestData["headers"] = new core.Map();
+    requestData["headers"] = new Map();
 
     if (queryParams != null) {
       requestData["params"] = queryParams;
@@ -54,14 +61,15 @@ abstract class BrowserClient extends Client {
       requestData["body"] = body;
       requestData["headers"]["Content-Type"] = contentType;
     }
-    if (makeAuthRequests && _auth != null && _auth.token != null) {
-      requestData["headers"]["Authorization"] = "${_auth.token.type} ${_auth.token.data}";
+    if (makeAuthRequests && auth != null && auth.token != null) {
+      requestData["headers"]["Authorization"] = "${auth.token.type} ${auth.token.data}";
     }
 
+    var completer = new Completer();
     js.scoped(() {
       var request = js.context["gapi"]["client"]["request"](js.map(requestData));
       var callback = new js.Callback.once((jsonResp, rawResp) {
-        if (jsonResp == null || (jsonResp is core.bool && jsonResp == false)) {
+        if (jsonResp == null || (jsonResp is bool && jsonResp == false)) {
           var raw = JSON.parse(rawResp);
           if (raw["gapiRequest"]["data"]["status"] >= 400) {
             completer.completeError(new APIRequestException("JS Client - ${raw["gapiRequest"]["data"]["status"]} ${raw["gapiRequest"]["data"]["statusText"]} - ${raw["gapiRequest"]["data"]["body"]}"));
@@ -81,9 +89,7 @@ abstract class BrowserClient extends Client {
   /**
    * Sends a HTTPRequest using [method] (usually GET or POST) to [requestUrl] using the specified [urlParams] and [queryParams]. Optionally include a [body] in the request.
    */
-  async.Future request(core.String requestUrl, core.String method, {core.String body, core.String contentType:"application/json", core.Map urlParams, core.Map queryParams}) {
-    var request = new html.HttpRequest();
-    var completer = new async.Completer();
+  Future<Map<String, dynamic>> request(String requestUrl, String method, {String body, String contentType:"application/json", Map urlParams, Map queryParams}) {
 
     if (urlParams == null) urlParams = {};
     if (queryParams == null) queryParams = {};
@@ -100,7 +106,10 @@ abstract class BrowserClient extends Client {
     } else {
       path ="$rootUrl${basePath.substring(1)}$requestUrl";
     }
-    var url = new oauth.UrlPattern(path).generate(urlParams, queryParams);
+    var url = oauth.UrlPattern.generatePattern(path, urlParams, queryParams);
+
+    var request = new html.HttpRequest();
+    var completer = new Completer();
 
     void handleError() {
       if (request.status == 0) {
@@ -110,7 +119,7 @@ abstract class BrowserClient extends Client {
           } else {
             path ="$basePath$requestUrl";
           }
-          url = new oauth.UrlPattern(path).generate(urlParams, {});
+          url = oauth.UrlPattern.generatePattern(path, urlParams, {});
           _makeJsClientRequest(url, method, body: body, contentType: contentType, queryParams: queryParams)
             .then((response) {
               var data = JSON.parse(response);
@@ -127,7 +136,7 @@ abstract class BrowserClient extends Client {
           var errorJson;
           try {
             errorJson = JSON.parse(request.responseText);
-          } on core.FormatException {
+          } on FormatException {
             errorJson = null;
           }
           if (errorJson != null && errorJson.containsKey("error")) {
@@ -157,8 +166,8 @@ abstract class BrowserClient extends Client {
 
     request.open(method, url);
     request.setRequestHeader("Content-Type", contentType);
-    if (makeAuthRequests && _auth != null) {
-      _auth.authenticate(request).then((request) => request.send(body));
+    if (makeAuthRequests && auth != null) {
+      auth.authenticate(request).then((request) => request.send(body));
     } else {
       request.send(body);
     }
@@ -166,4 +175,3 @@ abstract class BrowserClient extends Client {
     return completer.future;
   }
 }
-
