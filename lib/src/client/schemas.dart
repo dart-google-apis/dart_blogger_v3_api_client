@@ -123,7 +123,7 @@ class Blog {
   }
 
   /** Return String representation of Blog */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -170,7 +170,7 @@ class BlogLocale {
   }
 
   /** Return String representation of BlogLocale */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -208,7 +208,7 @@ class BlogPages {
   }
 
   /** Return String representation of BlogPages */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -255,11 +255,14 @@ class BlogPosts {
   }
 
   /** Return String representation of BlogPosts */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
 class BlogList {
+
+  /** Admin level list of blog per-user information */
+  core.List<BlogUserInfo> blogUserInfos;
 
   /** The list of Blogs this user has Authorship or Admin rights over. */
   core.List<Blog> items;
@@ -269,6 +272,9 @@ class BlogList {
 
   /** Create new BlogList from JSON data */
   BlogList.fromJson(core.Map json) {
+    if (json.containsKey("blogUserInfos")) {
+      blogUserInfos = json["blogUserInfos"].map((blogUserInfosItem) => new BlogUserInfo.fromJson(blogUserInfosItem)).toList();
+    }
     if (json.containsKey("items")) {
       items = json["items"].map((itemsItem) => new Blog.fromJson(itemsItem)).toList();
     }
@@ -281,6 +287,9 @@ class BlogList {
   core.Map toJson() {
     var output = new core.Map();
 
+    if (blogUserInfos != null) {
+      output["blogUserInfos"] = blogUserInfos.map((blogUserInfosItem) => blogUserInfosItem.toJson()).toList();
+    }
     if (items != null) {
       output["items"] = items.map((itemsItem) => itemsItem.toJson()).toList();
     }
@@ -292,24 +301,34 @@ class BlogList {
   }
 
   /** Return String representation of BlogList */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
 class BlogPerUserInfo {
 
+  /** ID of the Blog resource */
   core.String blogId;
 
+  /** True if the user has Admin level access to the blog. */
+  core.bool hasAdminAccess;
+
+  /** The kind of this entity. Always blogger#blogPerUserInfo */
   core.String kind;
 
+  /** The Photo Album Key for the user when adding photos to the blog */
   core.String photosAlbumKey;
 
+  /** ID of the User */
   core.String userId;
 
   /** Create new BlogPerUserInfo from JSON data */
   BlogPerUserInfo.fromJson(core.Map json) {
     if (json.containsKey("blogId")) {
       blogId = json["blogId"];
+    }
+    if (json.containsKey("hasAdminAccess")) {
+      hasAdminAccess = json["hasAdminAccess"];
     }
     if (json.containsKey("kind")) {
       kind = json["kind"];
@@ -329,6 +348,9 @@ class BlogPerUserInfo {
     if (blogId != null) {
       output["blogId"] = blogId;
     }
+    if (hasAdminAccess != null) {
+      output["hasAdminAccess"] = hasAdminAccess;
+    }
     if (kind != null) {
       output["kind"] = kind;
     }
@@ -343,28 +365,31 @@ class BlogPerUserInfo {
   }
 
   /** Return String representation of BlogPerUserInfo */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
 class BlogUserInfo {
 
+  /** The Blog resource. */
   Blog blog;
 
-  core.String kind;
+  /** Information about a User for the Blog. */
+  BlogPerUserInfo blog_user_info;
 
-  BlogPerUserInfo user;
+  /** The kind of this entity. Always blogger#blogUserInfo */
+  core.String kind;
 
   /** Create new BlogUserInfo from JSON data */
   BlogUserInfo.fromJson(core.Map json) {
     if (json.containsKey("blog")) {
       blog = new Blog.fromJson(json["blog"]);
     }
+    if (json.containsKey("blog_user_info")) {
+      blog_user_info = new BlogPerUserInfo.fromJson(json["blog_user_info"]);
+    }
     if (json.containsKey("kind")) {
       kind = json["kind"];
-    }
-    if (json.containsKey("user")) {
-      user = new BlogPerUserInfo.fromJson(json["user"]);
     }
   }
 
@@ -375,18 +400,18 @@ class BlogUserInfo {
     if (blog != null) {
       output["blog"] = blog.toJson();
     }
+    if (blog_user_info != null) {
+      output["blog_user_info"] = blog_user_info.toJson();
+    }
     if (kind != null) {
       output["kind"] = kind;
-    }
-    if (user != null) {
-      output["user"] = user.toJson();
     }
 
     return output;
   }
 
   /** Return String representation of BlogUserInfo */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -419,6 +444,9 @@ class Comment {
   /** The API REST URL to fetch this resource from. */
   core.String selfLink;
 
+  /** The status of the comment (only populated for admin users) */
+  core.String status;
+
   /** RFC 3339 date-time when this comment was last updated. */
   core.String updated;
 
@@ -450,6 +478,9 @@ class Comment {
     }
     if (json.containsKey("selfLink")) {
       selfLink = json["selfLink"];
+    }
+    if (json.containsKey("status")) {
+      status = json["status"];
     }
     if (json.containsKey("updated")) {
       updated = json["updated"];
@@ -487,6 +518,9 @@ class Comment {
     if (selfLink != null) {
       output["selfLink"] = selfLink;
     }
+    if (status != null) {
+      output["status"] = status;
+    }
     if (updated != null) {
       output["updated"] = updated;
     }
@@ -495,7 +529,7 @@ class Comment {
   }
 
   /** Return String representation of Comment */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -551,7 +585,7 @@ class CommentAuthor {
   }
 
   /** Return String representation of CommentAuthor */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -580,7 +614,7 @@ class CommentAuthorImage {
   }
 
   /** Return String representation of CommentAuthorImage */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -609,7 +643,7 @@ class CommentBlog {
   }
 
   /** Return String representation of CommentBlog */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -638,7 +672,7 @@ class CommentInReplyTo {
   }
 
   /** Return String representation of CommentInReplyTo */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -667,7 +701,7 @@ class CommentPost {
   }
 
   /** Return String representation of CommentPost */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -722,7 +756,7 @@ class CommentList {
   }
 
   /** Return String representation of CommentList */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -748,6 +782,9 @@ class Page {
 
   /** The API REST URL to fetch this resource from. */
   core.String selfLink;
+
+  /** The status of the page for admin resources (either LIVE or DRAFT). */
+  core.String status;
 
   /** The title of this entity. This is the name displayed in the Admin user interface. */
   core.String title;
@@ -780,6 +817,9 @@ class Page {
     }
     if (json.containsKey("selfLink")) {
       selfLink = json["selfLink"];
+    }
+    if (json.containsKey("status")) {
+      status = json["status"];
     }
     if (json.containsKey("title")) {
       title = json["title"];
@@ -817,6 +857,9 @@ class Page {
     if (selfLink != null) {
       output["selfLink"] = selfLink;
     }
+    if (status != null) {
+      output["status"] = status;
+    }
     if (title != null) {
       output["title"] = title;
     }
@@ -831,7 +874,7 @@ class Page {
   }
 
   /** Return String representation of Page */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -887,7 +930,7 @@ class PageAuthor {
   }
 
   /** Return String representation of PageAuthor */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -916,7 +959,7 @@ class PageAuthorImage {
   }
 
   /** Return String representation of PageAuthorImage */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -945,7 +988,7 @@ class PageBlog {
   }
 
   /** Return String representation of PageBlog */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -982,7 +1025,90 @@ class PageList {
   }
 
   /** Return String representation of PageList */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+class Pageviews {
+
+  /** Blog Id */
+  core.int blogId;
+
+  /** The container of posts in this blog. */
+  core.List<PageviewsCounts> counts;
+
+  /** The kind of this entry. Always blogger#page_views */
+  core.String kind;
+
+  /** Create new Pageviews from JSON data */
+  Pageviews.fromJson(core.Map json) {
+    if (json.containsKey("blogId")) {
+      blogId = (json["blogId"] is core.String) ? core.int.parse(json["blogId"]) : json["blogId"];
+    }
+    if (json.containsKey("counts")) {
+      counts = json["counts"].map((countsItem) => new PageviewsCounts.fromJson(countsItem)).toList();
+    }
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+  }
+
+  /** Create JSON Object for Pageviews */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (blogId != null) {
+      output["blogId"] = blogId;
+    }
+    if (counts != null) {
+      output["counts"] = counts.map((countsItem) => countsItem.toJson()).toList();
+    }
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of Pageviews */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+class PageviewsCounts {
+
+  /** Count of page views for the given time range */
+  core.int count;
+
+  /** Time range the given count applies to */
+  core.String timeRange;
+
+  /** Create new PageviewsCounts from JSON data */
+  PageviewsCounts.fromJson(core.Map json) {
+    if (json.containsKey("count")) {
+      count = (json["count"] is core.String) ? core.int.parse(json["count"]) : json["count"];
+    }
+    if (json.containsKey("timeRange")) {
+      timeRange = json["timeRange"];
+    }
+  }
+
+  /** Create JSON Object for PageviewsCounts */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (count != null) {
+      output["count"] = count;
+    }
+    if (timeRange != null) {
+      output["timeRange"] = timeRange;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of PageviewsCounts */
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1003,6 +1129,9 @@ class Post {
   /** The identifier of this Post. */
   core.String id;
 
+  /** Display image for the Post. */
+  core.List<PostImages> images;
+
   /** The kind of this entity. Always blogger#post */
   core.String kind;
 
@@ -1021,8 +1150,14 @@ class Post {
   /** The API REST URL to fetch this resource from. */
   core.String selfLink;
 
+  /** Status of the post. Only set for admin-level requests */
+  core.String status;
+
   /** The title of the Post. */
   core.String title;
+
+  /** The title link URL, similar to atom's related link. */
+  core.String titleLink;
 
   /** RFC 3339 date-time when this Post was last updated. */
   core.String updated;
@@ -1047,6 +1182,9 @@ class Post {
     if (json.containsKey("id")) {
       id = json["id"];
     }
+    if (json.containsKey("images")) {
+      images = json["images"].map((imagesItem) => new PostImages.fromJson(imagesItem)).toList();
+    }
     if (json.containsKey("kind")) {
       kind = json["kind"];
     }
@@ -1065,8 +1203,14 @@ class Post {
     if (json.containsKey("selfLink")) {
       selfLink = json["selfLink"];
     }
+    if (json.containsKey("status")) {
+      status = json["status"];
+    }
     if (json.containsKey("title")) {
       title = json["title"];
+    }
+    if (json.containsKey("titleLink")) {
+      titleLink = json["titleLink"];
     }
     if (json.containsKey("updated")) {
       updated = json["updated"];
@@ -1095,6 +1239,9 @@ class Post {
     if (id != null) {
       output["id"] = id;
     }
+    if (images != null) {
+      output["images"] = images.map((imagesItem) => imagesItem.toJson()).toList();
+    }
     if (kind != null) {
       output["kind"] = kind;
     }
@@ -1113,8 +1260,14 @@ class Post {
     if (selfLink != null) {
       output["selfLink"] = selfLink;
     }
+    if (status != null) {
+      output["status"] = status;
+    }
     if (title != null) {
       output["title"] = title;
+    }
+    if (titleLink != null) {
+      output["titleLink"] = titleLink;
     }
     if (updated != null) {
       output["updated"] = updated;
@@ -1127,7 +1280,7 @@ class Post {
   }
 
   /** Return String representation of Post */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1183,7 +1336,7 @@ class PostAuthor {
   }
 
   /** Return String representation of PostAuthor */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1212,7 +1365,7 @@ class PostAuthorImage {
   }
 
   /** Return String representation of PostAuthorImage */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1241,7 +1394,34 @@ class PostBlog {
   }
 
   /** Return String representation of PostBlog */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+class PostImages {
+
+  core.String url;
+
+  /** Create new PostImages from JSON data */
+  PostImages.fromJson(core.Map json) {
+    if (json.containsKey("url")) {
+      url = json["url"];
+    }
+  }
+
+  /** Create JSON Object for PostImages */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (url != null) {
+      output["url"] = url;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of PostImages */
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1297,7 +1477,7 @@ class PostLocation {
   }
 
   /** Return String representation of PostLocation */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1344,7 +1524,7 @@ class PostReplies {
   }
 
   /** Return String representation of PostReplies */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1359,9 +1539,6 @@ class PostList {
   /** Pagination token to fetch the next page, if one exists. */
   core.String nextPageToken;
 
-  /** Pagination token to fetch the previous page, if one exists. */
-  core.String prevPageToken;
-
   /** Create new PostList from JSON data */
   PostList.fromJson(core.Map json) {
     if (json.containsKey("items")) {
@@ -1372,9 +1549,6 @@ class PostList {
     }
     if (json.containsKey("nextPageToken")) {
       nextPageToken = json["nextPageToken"];
-    }
-    if (json.containsKey("prevPageToken")) {
-      prevPageToken = json["prevPageToken"];
     }
   }
 
@@ -1391,15 +1565,168 @@ class PostList {
     if (nextPageToken != null) {
       output["nextPageToken"] = nextPageToken;
     }
-    if (prevPageToken != null) {
-      output["prevPageToken"] = prevPageToken;
-    }
 
     return output;
   }
 
   /** Return String representation of PostList */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+class PostPerUserInfo {
+
+  /** ID of the Blog that the post resource belongs to. */
+  core.String blogId;
+
+  /** True if the user has Author level access to the post. */
+  core.bool hasEditAccess;
+
+  /** The kind of this entity. Always blogger#postPerUserInfo */
+  core.String kind;
+
+  /** ID of the Post resource. */
+  core.String postId;
+
+  /** ID of the User. */
+  core.String userId;
+
+  /** Create new PostPerUserInfo from JSON data */
+  PostPerUserInfo.fromJson(core.Map json) {
+    if (json.containsKey("blogId")) {
+      blogId = json["blogId"];
+    }
+    if (json.containsKey("hasEditAccess")) {
+      hasEditAccess = json["hasEditAccess"];
+    }
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+    if (json.containsKey("postId")) {
+      postId = json["postId"];
+    }
+    if (json.containsKey("userId")) {
+      userId = json["userId"];
+    }
+  }
+
+  /** Create JSON Object for PostPerUserInfo */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (blogId != null) {
+      output["blogId"] = blogId;
+    }
+    if (hasEditAccess != null) {
+      output["hasEditAccess"] = hasEditAccess;
+    }
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+    if (postId != null) {
+      output["postId"] = postId;
+    }
+    if (userId != null) {
+      output["userId"] = userId;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of PostPerUserInfo */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+class PostUserInfo {
+
+  /** The kind of this entity. Always blogger#postUserInfo */
+  core.String kind;
+
+  /** The Post resource. */
+  Post post;
+
+  /** Information about a User for the Post. */
+  PostPerUserInfo post_user_info;
+
+  /** Create new PostUserInfo from JSON data */
+  PostUserInfo.fromJson(core.Map json) {
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+    if (json.containsKey("post")) {
+      post = new Post.fromJson(json["post"]);
+    }
+    if (json.containsKey("post_user_info")) {
+      post_user_info = new PostPerUserInfo.fromJson(json["post_user_info"]);
+    }
+  }
+
+  /** Create JSON Object for PostUserInfo */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+    if (post != null) {
+      output["post"] = post.toJson();
+    }
+    if (post_user_info != null) {
+      output["post_user_info"] = post_user_info.toJson();
+    }
+
+    return output;
+  }
+
+  /** Return String representation of PostUserInfo */
+  core.String toString() => JSON.encode(this.toJson());
+
+}
+
+class PostUserInfosList {
+
+  /** The list of Posts with User information for the post, for this Blog. */
+  core.List<PostUserInfo> items;
+
+  /** The kind of this entity. Always blogger#postList */
+  core.String kind;
+
+  /** Pagination token to fetch the next page, if one exists. */
+  core.String nextPageToken;
+
+  /** Create new PostUserInfosList from JSON data */
+  PostUserInfosList.fromJson(core.Map json) {
+    if (json.containsKey("items")) {
+      items = json["items"].map((itemsItem) => new PostUserInfo.fromJson(itemsItem)).toList();
+    }
+    if (json.containsKey("kind")) {
+      kind = json["kind"];
+    }
+    if (json.containsKey("nextPageToken")) {
+      nextPageToken = json["nextPageToken"];
+    }
+  }
+
+  /** Create JSON Object for PostUserInfosList */
+  core.Map toJson() {
+    var output = new core.Map();
+
+    if (items != null) {
+      output["items"] = items.map((itemsItem) => itemsItem.toJson()).toList();
+    }
+    if (kind != null) {
+      output["kind"] = kind;
+    }
+    if (nextPageToken != null) {
+      output["nextPageToken"] = nextPageToken;
+    }
+
+    return output;
+  }
+
+  /** Return String representation of PostUserInfosList */
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1499,7 +1826,7 @@ class User {
   }
 
   /** Return String representation of User */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1528,7 +1855,7 @@ class UserBlogs {
   }
 
   /** Return String representation of UserBlogs */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 
@@ -1575,7 +1902,7 @@ class UserLocale {
   }
 
   /** Return String representation of UserLocale */
-  core.String toString() => JSON.stringify(this.toJson());
+  core.String toString() => JSON.encode(this.toJson());
 
 }
 

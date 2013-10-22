@@ -129,16 +129,29 @@ class BlogsResource_ {
    *
    * [userId] - ID of the user whose blogs are to be fetched. Either the word 'self' (sans quote marks) or the user's profile identifier.
    *
+   * [fetchUserInfo] - Whether the response is a list of blogs with per-user information instead of just blogs.
+   *
+   * [view]
+   *   Allowed values:
+   *     ADMIN - Admin level detail
+   *     AUTHOR - Author level detail
+   *     READER - Admin level detail
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<BlogList> listByUser(core.String userId, {core.Map optParams}) {
+  async.Future<BlogList> listByUser(core.String userId, {core.bool fetchUserInfo, core.String view, core.Map optParams}) {
     var url = "users/{userId}/blogs";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
     var paramErrors = new core.List();
+    if (fetchUserInfo != null) queryParams["fetchUserInfo"] = fetchUserInfo;
     if (userId == null) paramErrors.add("userId is required");
     if (userId != null) urlParams["userId"] = userId;
+    if (view != null && !["ADMIN", "AUTHOR", "READER"].contains(view)) {
+      paramErrors.add("Allowed values for view: ADMIN, AUTHOR, READER");
+    }
+    if (view != null) queryParams["view"] = view;
     if (optParams != null) {
       optParams.forEach((key, value) {
         if (value != null && queryParams[key] == null) {
@@ -164,6 +177,87 @@ class CommentsResource_ {
 
   CommentsResource_(Client client) :
       _client = client;
+
+  /**
+   * Marks a comment as not spam.
+   *
+   * [blogId] - The Id of the Blog.
+   *
+   * [postId] - The ID of the Post.
+   *
+   * [commentId] - The ID of the comment to mark as not spam.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Comment> approve(core.String blogId, core.String postId, core.String commentId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/posts/{postId}/comments/{commentId}/approve";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (commentId == null) paramErrors.add("commentId is required");
+    if (commentId != null) urlParams["commentId"] = commentId;
+    if (postId == null) paramErrors.add("postId is required");
+    if (postId != null) urlParams["postId"] = postId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "POST", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Comment.fromJson(data));
+  }
+
+  /**
+   * Delete a comment by id.
+   *
+   * [blogId] - The Id of the Blog.
+   *
+   * [postId] - The ID of the Post.
+   *
+   * [commentId] - The ID of the comment to delete.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<core.Map> delete(core.String blogId, core.String postId, core.String commentId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/posts/{postId}/comments/{commentId}";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (commentId == null) paramErrors.add("commentId is required");
+    if (commentId != null) urlParams["commentId"] = commentId;
+    if (postId == null) paramErrors.add("postId is required");
+    if (postId != null) urlParams["postId"] = postId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "DELETE", urlParams: urlParams, queryParams: queryParams);
+    return response;
+  }
 
   /**
    * Gets one comment by id.
@@ -207,7 +301,7 @@ class CommentsResource_ {
   }
 
   /**
-   * Retrieves the comments for a blog, possibly filtered.
+   * Retrieves the comments for a post, possibly filtered.
    *
    * [blogId] - ID of the blog to fetch comments from.
    *
@@ -223,9 +317,23 @@ class CommentsResource_ {
    *
    * [startDate] - Earliest date of comment to fetch, a date-time with RFC 3339 formatting.
    *
+   * [statuses]
+   *   Repeated values: allowed
+   *   Allowed values:
+   *     emptied - Comments that have had their content removed
+   *     live - Comments that are publicly visible
+   *     pending - Comments that are awaiting administrator approval
+   *     spam - Comments marked as spam by the administrator
+   *
+   * [view]
+   *   Allowed values:
+   *     ADMIN - Admin level detail
+   *     AUTHOR - Author level detail
+   *     READER - Admin level detail
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<CommentList> list(core.String blogId, core.String postId, {core.String endDate, core.bool fetchBodies, core.int maxResults, core.String pageToken, core.String startDate, core.Map optParams}) {
+  async.Future<CommentList> list(core.String blogId, core.String postId, {core.String endDate, core.bool fetchBodies, core.int maxResults, core.String pageToken, core.String startDate, core.List<core.String> statuses, core.String view, core.Map optParams}) {
     var url = "blogs/{blogId}/posts/{postId}/comments";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -239,6 +347,62 @@ class CommentsResource_ {
     if (pageToken != null) queryParams["pageToken"] = pageToken;
     if (postId == null) paramErrors.add("postId is required");
     if (postId != null) urlParams["postId"] = postId;
+    if (startDate != null) queryParams["startDate"] = startDate;
+    if (statuses != null && !["emptied", "live", "pending", "spam"].contains(statuses)) {
+      paramErrors.add("Allowed values for statuses: emptied, live, pending, spam");
+    }
+    if (statuses != null) queryParams["statuses"] = statuses;
+    if (view != null && !["ADMIN", "AUTHOR", "READER"].contains(view)) {
+      paramErrors.add("Allowed values for view: ADMIN, AUTHOR, READER");
+    }
+    if (view != null) queryParams["view"] = view;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new CommentList.fromJson(data));
+  }
+
+  /**
+   * Retrieves the comments for a blog, across all posts, possibly filtered.
+   *
+   * [blogId] - ID of the blog to fetch comments from.
+   *
+   * [endDate] - Latest date of comment to fetch, a date-time with RFC 3339 formatting.
+   *
+   * [fetchBodies] - Whether the body content of the comments is included.
+   *
+   * [maxResults] - Maximum number of comments to include in the result.
+   *
+   * [pageToken] - Continuation token if request is paged.
+   *
+   * [startDate] - Earliest date of comment to fetch, a date-time with RFC 3339 formatting.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<CommentList> listByBlog(core.String blogId, {core.String endDate, core.bool fetchBodies, core.int maxResults, core.String pageToken, core.String startDate, core.Map optParams}) {
+    var url = "blogs/{blogId}/comments";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (endDate != null) queryParams["endDate"] = endDate;
+    if (fetchBodies != null) queryParams["fetchBodies"] = fetchBodies;
+    if (maxResults != null) queryParams["maxResults"] = maxResults;
+    if (pageToken != null) queryParams["pageToken"] = pageToken;
     if (startDate != null) queryParams["startDate"] = startDate;
     if (optParams != null) {
       optParams.forEach((key, value) {
@@ -257,6 +421,140 @@ class CommentsResource_ {
     return response
       .then((data) => new CommentList.fromJson(data));
   }
+
+  /**
+   * Marks a comment as spam.
+   *
+   * [blogId] - The Id of the Blog.
+   *
+   * [postId] - The ID of the Post.
+   *
+   * [commentId] - The ID of the comment to mark as spam.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Comment> markAsSpam(core.String blogId, core.String postId, core.String commentId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/posts/{postId}/comments/{commentId}/spam";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (commentId == null) paramErrors.add("commentId is required");
+    if (commentId != null) urlParams["commentId"] = commentId;
+    if (postId == null) paramErrors.add("postId is required");
+    if (postId != null) urlParams["postId"] = postId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "POST", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Comment.fromJson(data));
+  }
+
+  /**
+   * Removes the content of a comment.
+   *
+   * [blogId] - The Id of the Blog.
+   *
+   * [postId] - The ID of the Post.
+   *
+   * [commentId] - The ID of the comment to delete content from.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Comment> removeContent(core.String blogId, core.String postId, core.String commentId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/posts/{postId}/comments/{commentId}/removecontent";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (commentId == null) paramErrors.add("commentId is required");
+    if (commentId != null) urlParams["commentId"] = commentId;
+    if (postId == null) paramErrors.add("postId is required");
+    if (postId != null) urlParams["postId"] = postId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "POST", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Comment.fromJson(data));
+  }
+}
+
+class PageViewsResource_ {
+
+  final Client _client;
+
+  PageViewsResource_(Client client) :
+      _client = client;
+
+  /**
+   * Retrieve pageview stats for a Blog.
+   *
+   * [blogId] - The ID of the blog to get.
+   *
+   * [range]
+   *   Repeated values: allowed
+   *   Allowed values:
+   *     30DAYS - Page view counts from the last thirty days.
+   *     7DAYS - Page view counts from the last seven days.
+   *     all - Total page view counts from all time.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Pageviews> get(core.String blogId, {core.List<core.String> range, core.Map optParams}) {
+    var url = "blogs/{blogId}/pageviews";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (range != null && !["30DAYS", "7DAYS", "all"].contains(range)) {
+      paramErrors.add("Allowed values for range: 30DAYS, 7DAYS, all");
+    }
+    if (range != null) queryParams["range"] = range;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Pageviews.fromJson(data));
+  }
 }
 
 class PagesResource_ {
@@ -267,15 +565,15 @@ class PagesResource_ {
       _client = client;
 
   /**
-   * Gets one blog page by id.
+   * Delete a page by id.
    *
-   * [blogId] - ID of the blog containing the page.
+   * [blogId] - The Id of the Blog.
    *
-   * [pageId] - The ID of the page to get.
+   * [pageId] - The ID of the Page.
    *
    * [optParams] - Additional query parameters
    */
-  async.Future<Page> get(core.String blogId, core.String pageId, {core.Map optParams}) {
+  async.Future<core.Map> delete(core.String blogId, core.String pageId, {core.Map optParams}) {
     var url = "blogs/{blogId}/pages/{pageId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -298,21 +596,115 @@ class PagesResource_ {
     }
 
     var response;
+    response = _client.request(url, "DELETE", urlParams: urlParams, queryParams: queryParams);
+    return response;
+  }
+
+  /**
+   * Gets one blog page by id.
+   *
+   * [blogId] - ID of the blog containing the page.
+   *
+   * [pageId] - The ID of the page to get.
+   *
+   * [view]
+   *   Allowed values:
+   *     ADMIN - Admin level detail
+   *     AUTHOR - Author level detail
+   *     READER - Admin level detail
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Page> get(core.String blogId, core.String pageId, {core.String view, core.Map optParams}) {
+    var url = "blogs/{blogId}/pages/{pageId}";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (pageId == null) paramErrors.add("pageId is required");
+    if (pageId != null) urlParams["pageId"] = pageId;
+    if (view != null && !["ADMIN", "AUTHOR", "READER"].contains(view)) {
+      paramErrors.add("Allowed values for view: ADMIN, AUTHOR, READER");
+    }
+    if (view != null) queryParams["view"] = view;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
     return response
       .then((data) => new Page.fromJson(data));
   }
 
   /**
-   * Retrieves pages for a blog, possibly filtered.
+   * Add a page.
+   *
+   * [request] - Page to send in this request
+   *
+   * [blogId] - ID of the blog to add the page to.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Page> insert(Page request, core.String blogId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/pages";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "POST", body: request.toString(), urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Page.fromJson(data));
+  }
+
+  /**
+   * Retrieves the pages for a blog, optionally including non-LIVE statuses.
    *
    * [blogId] - ID of the blog to fetch pages from.
    *
    * [fetchBodies] - Whether to retrieve the Page bodies.
    *
+   * [statuses]
+   *   Repeated values: allowed
+   *   Allowed values:
+   *     draft - Draft (unpublished) Pages
+   *     imported - Pages that have had their content removed
+   *     live - Pages that are publicly visible
+   *
+   * [view]
+   *   Allowed values:
+   *     ADMIN - Admin level detail
+   *     AUTHOR - Author level detail
+   *     READER - Admin level detail
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<PageList> list(core.String blogId, {core.bool fetchBodies, core.Map optParams}) {
+  async.Future<PageList> list(core.String blogId, {core.bool fetchBodies, core.List<core.String> statuses, core.String view, core.Map optParams}) {
     var url = "blogs/{blogId}/pages";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -321,6 +713,14 @@ class PagesResource_ {
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
     if (fetchBodies != null) queryParams["fetchBodies"] = fetchBodies;
+    if (statuses != null && !["draft", "imported", "live"].contains(statuses)) {
+      paramErrors.add("Allowed values for statuses: draft, imported, live");
+    }
+    if (statuses != null) queryParams["statuses"] = statuses;
+    if (view != null && !["ADMIN", "AUTHOR", "READER"].contains(view)) {
+      paramErrors.add("Allowed values for view: ADMIN, AUTHOR, READER");
+    }
+    if (view != null) queryParams["view"] = view;
     if (optParams != null) {
       optParams.forEach((key, value) {
         if (value != null && queryParams[key] == null) {
@@ -337,6 +737,222 @@ class PagesResource_ {
     response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
     return response
       .then((data) => new PageList.fromJson(data));
+  }
+
+  /**
+   * Update a page. This method supports patch semantics.
+   *
+   * [request] - Page to send in this request
+   *
+   * [blogId] - The ID of the Blog.
+   *
+   * [pageId] - The ID of the Page.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Page> patch(Page request, core.String blogId, core.String pageId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/pages/{pageId}";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (pageId == null) paramErrors.add("pageId is required");
+    if (pageId != null) urlParams["pageId"] = pageId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "PATCH", body: request.toString(), urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Page.fromJson(data));
+  }
+
+  /**
+   * Update a page.
+   *
+   * [request] - Page to send in this request
+   *
+   * [blogId] - The ID of the Blog.
+   *
+   * [pageId] - The ID of the Page.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Page> update(Page request, core.String blogId, core.String pageId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/pages/{pageId}";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (pageId == null) paramErrors.add("pageId is required");
+    if (pageId != null) urlParams["pageId"] = pageId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "PUT", body: request.toString(), urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Page.fromJson(data));
+  }
+}
+
+class PostUserInfosResource_ {
+
+  final Client _client;
+
+  PostUserInfosResource_(Client client) :
+      _client = client;
+
+  /**
+   * Gets one post and user info pair by postId and userId.
+   *
+   * [userId] - ID of the user for the per-user information to be fetched. Either the word 'self' (sans quote marks) or the user's profile identifier.
+   *
+   * [blogId] - The ID of the blog.
+   *
+   * [postId] - The ID of the post to get.
+   *
+   * [maxComments] - Maximum number of comments to pull back on a post.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<PostUserInfo> get(core.String userId, core.String blogId, core.String postId, {core.int maxComments, core.Map optParams}) {
+    var url = "users/{userId}/blogs/{blogId}/posts/{postId}";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (maxComments != null) queryParams["maxComments"] = maxComments;
+    if (postId == null) paramErrors.add("postId is required");
+    if (postId != null) urlParams["postId"] = postId;
+    if (userId == null) paramErrors.add("userId is required");
+    if (userId != null) urlParams["userId"] = userId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new PostUserInfo.fromJson(data));
+  }
+
+  /**
+   * Retrieves a list of post and user info pairs, possibly filtered.
+   *
+   * [userId] - ID of the user for the per-user information to be fetched. Either the word 'self' (sans quote marks) or the user's profile identifier.
+   *
+   * [blogId] - ID of the blog to fetch posts from.
+   *
+   * [endDate] - Latest post date to fetch, a date-time with RFC 3339 formatting.
+   *
+   * [fetchBodies] - Whether the body content of posts is included.
+   *
+   * [labels] - Comma-separated list of labels to search for.
+   *
+   * [maxResults] - Maximum number of posts to fetch.
+   *
+   * [orderBy] - Sort search results
+   *   Default: PUBLISHED
+   *   Allowed values:
+   *     published - Order by the date the post was published
+   *     updated - Order by the date the post was last updated
+   *
+   * [pageToken] - Continuation token if the request is paged.
+   *
+   * [startDate] - Earliest post date to fetch, a date-time with RFC 3339 formatting.
+   *
+   * [statuses]
+   *   Repeated values: allowed
+   *   Allowed values:
+   *     draft - Draft posts
+   *     live - Published posts
+   *     scheduled - Posts that are scheduled to publish in future.
+   *
+   * [view]
+   *   Allowed values:
+   *     ADMIN - Admin level detail
+   *     AUTHOR - Author level detail
+   *     READER - Reader level detail
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<PostUserInfosList> list(core.String userId, core.String blogId, {core.String endDate, core.bool fetchBodies, core.String labels, core.int maxResults, core.String orderBy, core.String pageToken, core.String startDate, core.List<core.String> statuses, core.String view, core.Map optParams}) {
+    var url = "users/{userId}/blogs/{blogId}/posts";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (endDate != null) queryParams["endDate"] = endDate;
+    if (fetchBodies != null) queryParams["fetchBodies"] = fetchBodies;
+    if (labels != null) queryParams["labels"] = labels;
+    if (maxResults != null) queryParams["maxResults"] = maxResults;
+    if (orderBy != null && !["published", "updated"].contains(orderBy)) {
+      paramErrors.add("Allowed values for orderBy: published, updated");
+    }
+    if (orderBy != null) queryParams["orderBy"] = orderBy;
+    if (pageToken != null) queryParams["pageToken"] = pageToken;
+    if (startDate != null) queryParams["startDate"] = startDate;
+    if (statuses != null && !["draft", "live", "scheduled"].contains(statuses)) {
+      paramErrors.add("Allowed values for statuses: draft, live, scheduled");
+    }
+    if (statuses != null) queryParams["statuses"] = statuses;
+    if (userId == null) paramErrors.add("userId is required");
+    if (userId != null) urlParams["userId"] = userId;
+    if (view != null && !["ADMIN", "AUTHOR", "READER"].contains(view)) {
+      paramErrors.add("Allowed values for view: ADMIN, AUTHOR, READER");
+    }
+    if (view != null) queryParams["view"] = view;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "GET", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new PostUserInfosList.fromJson(data));
   }
 }
 
@@ -392,9 +1008,15 @@ class PostsResource_ {
    *
    * [maxComments] - Maximum number of comments to pull back on a post.
    *
+   * [view]
+   *   Allowed values:
+   *     ADMIN - Admin level detail
+   *     AUTHOR - Author level detail
+   *     READER - Admin level detail
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<Post> get(core.String blogId, core.String postId, {core.int maxComments, core.Map optParams}) {
+  async.Future<Post> get(core.String blogId, core.String postId, {core.int maxComments, core.String view, core.Map optParams}) {
     var url = "blogs/{blogId}/posts/{postId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -405,6 +1027,10 @@ class PostsResource_ {
     if (maxComments != null) queryParams["maxComments"] = maxComments;
     if (postId == null) paramErrors.add("postId is required");
     if (postId != null) urlParams["postId"] = postId;
+    if (view != null && !["ADMIN", "AUTHOR", "READER"].contains(view)) {
+      paramErrors.add("Allowed values for view: ADMIN, AUTHOR, READER");
+    }
+    if (view != null) queryParams["view"] = view;
     if (optParams != null) {
       optParams.forEach((key, value) {
         if (value != null && queryParams[key] == null) {
@@ -432,9 +1058,15 @@ class PostsResource_ {
    *
    * [maxComments] - Maximum number of comments to pull back on a post.
    *
+   * [view]
+   *   Allowed values:
+   *     ADMIN - Admin level detail
+   *     AUTHOR - Author level detail
+   *     READER - Admin level detail
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<Post> getByPath(core.String blogId, core.String path, {core.int maxComments, core.Map optParams}) {
+  async.Future<Post> getByPath(core.String blogId, core.String path, {core.int maxComments, core.String view, core.Map optParams}) {
     var url = "blogs/{blogId}/posts/bypath";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -445,6 +1077,10 @@ class PostsResource_ {
     if (maxComments != null) queryParams["maxComments"] = maxComments;
     if (path == null) paramErrors.add("path is required");
     if (path != null) queryParams["path"] = path;
+    if (view != null && !["ADMIN", "AUTHOR", "READER"].contains(view)) {
+      paramErrors.add("Allowed values for view: ADMIN, AUTHOR, READER");
+    }
+    if (view != null) queryParams["view"] = view;
     if (optParams != null) {
       optParams.forEach((key, value) {
         if (value != null && queryParams[key] == null) {
@@ -470,9 +1106,11 @@ class PostsResource_ {
    *
    * [blogId] - ID of the blog to add the post to.
    *
+   * [isDraft] - Whether to create the post as a draft
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<Post> insert(Post request, core.String blogId, {core.Map optParams}) {
+  async.Future<Post> insert(Post request, core.String blogId, {core.bool isDraft, core.Map optParams}) {
     var url = "blogs/{blogId}/posts";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -480,6 +1118,7 @@ class PostsResource_ {
     var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
+    if (isDraft != null) queryParams["isDraft"] = isDraft;
     if (optParams != null) {
       optParams.forEach((key, value) {
         if (value != null && queryParams[key] == null) {
@@ -505,19 +1144,41 @@ class PostsResource_ {
    *
    * [endDate] - Latest post date to fetch, a date-time with RFC 3339 formatting.
    *
-   * [fetchBodies] - Whether the body content of posts is included.
+   * [fetchBodies] - Whether the body content of posts is included (default: true). This should be set to false when the post bodies are not required, to help minimize traffic.
+   *   Default: true
+   *
+   * [fetchImages] - Whether image URL metadata for each post is included.
    *
    * [labels] - Comma-separated list of labels to search for.
    *
    * [maxResults] - Maximum number of posts to fetch.
    *
+   * [orderBy] - Sort search results
+   *   Default: PUBLISHED
+   *   Allowed values:
+   *     published - Order by the date the post was published
+   *     updated - Order by the date the post was last updated
+   *
    * [pageToken] - Continuation token if the request is paged.
    *
    * [startDate] - Earliest post date to fetch, a date-time with RFC 3339 formatting.
    *
+   * [statuses]
+   *   Repeated values: allowed
+   *   Allowed values:
+   *     draft - Draft posts
+   *     live - Published posts
+   *     scheduled - Posts that are scheduled to publish in future.
+   *
+   * [view]
+   *   Allowed values:
+   *     ADMIN - Admin level detail
+   *     AUTHOR - Author level detail
+   *     READER - Reader level detail
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<PostList> list(core.String blogId, {core.String endDate, core.bool fetchBodies, core.String labels, core.int maxResults, core.String pageToken, core.String startDate, core.Map optParams}) {
+  async.Future<PostList> list(core.String blogId, {core.String endDate, core.bool fetchBodies, core.bool fetchImages, core.String labels, core.int maxResults, core.String orderBy, core.String pageToken, core.String startDate, core.List<core.String> statuses, core.String view, core.Map optParams}) {
     var url = "blogs/{blogId}/posts";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -527,10 +1188,23 @@ class PostsResource_ {
     if (blogId != null) urlParams["blogId"] = blogId;
     if (endDate != null) queryParams["endDate"] = endDate;
     if (fetchBodies != null) queryParams["fetchBodies"] = fetchBodies;
+    if (fetchImages != null) queryParams["fetchImages"] = fetchImages;
     if (labels != null) queryParams["labels"] = labels;
     if (maxResults != null) queryParams["maxResults"] = maxResults;
+    if (orderBy != null && !["published", "updated"].contains(orderBy)) {
+      paramErrors.add("Allowed values for orderBy: published, updated");
+    }
+    if (orderBy != null) queryParams["orderBy"] = orderBy;
     if (pageToken != null) queryParams["pageToken"] = pageToken;
     if (startDate != null) queryParams["startDate"] = startDate;
+    if (statuses != null && !["draft", "live", "scheduled"].contains(statuses)) {
+      paramErrors.add("Allowed values for statuses: draft, live, scheduled");
+    }
+    if (statuses != null) queryParams["statuses"] = statuses;
+    if (view != null && !["ADMIN", "AUTHOR", "READER"].contains(view)) {
+      paramErrors.add("Allowed values for view: ADMIN, AUTHOR, READER");
+    }
+    if (view != null) queryParams["view"] = view;
     if (optParams != null) {
       optParams.forEach((key, value) {
         if (value != null && queryParams[key] == null) {
@@ -589,15 +1263,101 @@ class PostsResource_ {
   }
 
   /**
+   * Publish a draft post.
+   *
+   * [blogId] - The ID of the Blog.
+   *
+   * [postId] - The ID of the Post.
+   *
+   * [publishDate] - The date and time to schedule the publishing of the Blog.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Post> publish(core.String blogId, core.String postId, {core.String publishDate, core.Map optParams}) {
+    var url = "blogs/{blogId}/posts/{postId}/publish";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (postId == null) paramErrors.add("postId is required");
+    if (postId != null) urlParams["postId"] = postId;
+    if (publishDate != null) queryParams["publishDate"] = publishDate;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "POST", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Post.fromJson(data));
+  }
+
+  /**
+   * Revert a published or scheduled post to draft state.
+   *
+   * [blogId] - The ID of the Blog.
+   *
+   * [postId] - The ID of the Post.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Post> revert(core.String blogId, core.String postId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/posts/{postId}/revert";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (postId == null) paramErrors.add("postId is required");
+    if (postId != null) urlParams["postId"] = postId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "POST", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Post.fromJson(data));
+  }
+
+  /**
    * Search for a post.
    *
    * [blogId] - ID of the blog to fetch the post from.
    *
    * [q] - Query terms to search this blog for matching posts.
    *
+   * [fetchBodies] - Whether the body content of posts is included (default: true). This should be set to false when the post bodies are not required, to help minimize traffic.
+   *   Default: true
+   *
+   * [orderBy] - Sort search results
+   *   Default: PUBLISHED
+   *   Allowed values:
+   *     published - Order by the date the post was published
+   *     updated - Order by the date the post was last updated
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<PostList> search(core.String blogId, core.String q, {core.Map optParams}) {
+  async.Future<PostList> search(core.String blogId, core.String q, {core.bool fetchBodies, core.String orderBy, core.Map optParams}) {
     var url = "blogs/{blogId}/posts/search";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -605,6 +1365,11 @@ class PostsResource_ {
     var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
+    if (fetchBodies != null) queryParams["fetchBodies"] = fetchBodies;
+    if (orderBy != null && !["published", "updated"].contains(orderBy)) {
+      paramErrors.add("Allowed values for orderBy: published, updated");
+    }
+    if (orderBy != null) queryParams["orderBy"] = orderBy;
     if (q == null) paramErrors.add("q is required");
     if (q != null) queryParams["q"] = q;
     if (optParams != null) {

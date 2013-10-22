@@ -11,7 +11,9 @@ abstract class Client extends ClientBase {
   BlogUserInfosResource_ get blogUserInfos => new BlogUserInfosResource_(this);
   BlogsResource_ get blogs => new BlogsResource_(this);
   CommentsResource_ get comments => new CommentsResource_(this);
+  PageViewsResource_ get pageViews => new PageViewsResource_(this);
   PagesResource_ get pages => new PagesResource_(this);
+  PostUserInfosResource_ get postUserInfos => new PostUserInfosResource_(this);
   PostsResource_ get posts => new PostsResource_(this);
   UsersResource_ get users => new UsersResource_(this);
 

@@ -2,11 +2,10 @@ library cloud_api.console;
 
 import "dart:io";
 import "dart:async";
-import "dart:json";
 import "package:http/http.dart";
 import "package:google_oauth2_client/google_oauth2_console.dart" as oauth2;
 
-import 'cloud_api.dart';
+import 'client_base.dart';
 
 /**
  * Base class for all Console API clients, offering generic methods for HTTP Requests to the API
@@ -61,10 +60,7 @@ abstract class ConsoleClient implements ClientBase {
     return httpClient.send(request)
         .then(Response.fromStream)
         .then((Response response) {
-          if(response.body.isEmpty) {
-            return null;
-          }
-          return parse(response.body);
+          return ClientBase.responseParse(response.statusCode, response.body);
         })
         .whenComplete(() {
           httpClient.close();

@@ -1,6 +1,7 @@
 library cloud_api;
 
 import "dart:async";
+import "dart:convert";
 
 // TODO: look into other ways of building out the multiPartBody
 
@@ -45,13 +46,37 @@ abstract class ClientBase {
 
     return request(requestUrl, method, body: multiPartBody.toString(), contentType: "multipart/mixed; boundary=\"$_boundary\"", urlParams: urlParams, queryParams: queryParams);
   }
+
+  static Map<String, dynamic> responseParse(int statusCode, String responseBody) {
+    DetailedApiRequestError.validateResponse(statusCode, responseBody);
+
+    if(responseBody.isEmpty) {
+      return null;
+    }
+    return JSON.decode(responseBody);
+  }
 }
 
 /**
- * Exception thrown when the HTTP Request to the API failed
+ * Error thrown when the HTTP Request to the API failed
  */
-class APIRequestException implements Exception {
-  final String msg;
-  const APIRequestException([this.msg]);
-  String toString() => (msg == null) ? "APIRequestException" : "APIRequestException: $msg";
+class APIRequestError extends Error {
+  final String message;
+  APIRequestError([this.message]);
+  String toString() => (message == null) ? "APIRequestException" : "APIRequestException: $message";
+}
+
+class DetailedApiRequestError extends Error {
+  final int statusCode;
+  final String body;
+
+  DetailedApiRequestError._(this.statusCode, this.body);
+
+  static void validateResponse(int statusCode, String responseBody) {
+    if(statusCode >= 400) {
+      throw new DetailedApiRequestError._(statusCode, responseBody);
+    }
+  }
+
+  String toString() => '$statusCode - $body';
 }
