@@ -1,5 +1,5 @@
 name: google_blogger_v3_api
-version: 0.4.10
+version: 0.4.11
 authors:
 - Adam Singer <financeCoding@gmail.com>
 - Gerwin Sturm <scarygami@gmail.com>
@@ -7,8 +7,8 @@ authors:
 description: Auto-generated client library for accessing the blogger v3 API
 homepage: https://github.com/dart-gde/discovery_api_dart_client_generator
 environment:
-  sdk: '>=0.8.7'
+  sdk: '>=0.8.10+6 <2.0.0'
 dependencies:
-  google_oauth2_client: '>=0.3.0'
+  google_oauth2_client: '>=0.3.2'
 dev_dependencies:
-  hop: '>=0.26.0'
+  hop: '>=0.27.1'
