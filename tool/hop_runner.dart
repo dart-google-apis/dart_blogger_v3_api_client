@@ -11,7 +11,8 @@ void main(List<String> args) {
     'lib/blogger_v3_api_client.dart'
   ];
 
-  addTask('docs', createDartDocTask(pathList, linkApi: true));
+  // TODO(adam): re enable when hop_docgen is available
+  // addTask('docs', createDartDocTask(pathList, linkApi: true));
 
   addTask('analyze', createAnalyzerTask(pathList));
 

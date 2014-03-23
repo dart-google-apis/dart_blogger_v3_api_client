@@ -319,6 +319,9 @@ class BlogPerUserInfo {
   /** The Photo Album Key for the user when adding photos to the blog */
   core.String photosAlbumKey;
 
+  /** Access permissions that the user has for the blog (ADMIN, AUTHOR, or READER). */
+  core.String role;
+
   /** ID of the User */
   core.String userId;
 
@@ -335,6 +338,9 @@ class BlogPerUserInfo {
     }
     if (json.containsKey("photosAlbumKey")) {
       photosAlbumKey = json["photosAlbumKey"];
+    }
+    if (json.containsKey("role")) {
+      role = json["role"];
     }
     if (json.containsKey("userId")) {
       userId = json["userId"];
@@ -356,6 +362,9 @@ class BlogPerUserInfo {
     }
     if (photosAlbumKey != null) {
       output["photosAlbumKey"] = photosAlbumKey;
+    }
+    if (role != null) {
+      output["role"] = role;
     }
     if (userId != null) {
       output["userId"] = userId;
