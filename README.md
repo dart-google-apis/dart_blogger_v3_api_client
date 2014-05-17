@@ -14,7 +14,7 @@ Adding dependency to pubspec.yaml
 
 ```
   dependencies:
-    google_blogger_v3_api: '>=0.4.12'
+    google_blogger_v3_api: '>=0.4.13'
 ```
 
 For web applications:
