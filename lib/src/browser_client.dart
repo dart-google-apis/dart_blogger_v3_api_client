@@ -11,6 +11,7 @@ import 'client_base.dart';
 /**
  * Base class for all Browser API clients, offering generic methods for HTTP Requests to the API
  */
+@deprecated
 abstract class BrowserClient implements ClientBase {
 
   static const _corsCallback = 'handleCLientLoad';

@@ -10,6 +10,7 @@ import 'client_base.dart';
 /**
  * Base class for all Console API clients, offering generic methods for HTTP Requests to the API
  */
+@deprecated
 abstract class ConsoleClient implements ClientBase {
 
   oauth2.OAuth2Console get auth;

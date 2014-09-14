@@ -56,17 +56,17 @@ class BlogsResource_ {
       _client = client;
 
   /**
-   * Gets one blog by id.
+   * Gets one blog by ID.
    *
    * [blogId] - The ID of the blog to get.
    *
    * [maxPosts] - Maximum number of posts to pull back with the blog.
    *
-   * [view] - Access level with which to view the blogs. Note that some fields require elevated access.
+   * [view] - Access level with which to view the blog. Note that some fields require elevated access.
    *   Allowed values:
-   *     ADMIN - Admin level detail
-   *     AUTHOR - Author level detail
-   *     READER - Reader level detail
+   *     ADMIN - Admin level detail.
+   *     AUTHOR - Author level detail.
+   *     READER - Reader level detail.
    *
    * [optParams] - Additional query parameters
    */
@@ -106,11 +106,11 @@ class BlogsResource_ {
    *
    * [url] - The URL of the blog to retrieve.
    *
-   * [view] - Access level with which to view the blogs. Note that some fields require elevated access.
+   * [view] - Access level with which to view the blog. Note that some fields require elevated access.
    *   Allowed values:
-   *     ADMIN - Admin level detail
-   *     AUTHOR - Author level detail
-   *     READER - Reader level detail
+   *     ADMIN - Admin level detail.
+   *     AUTHOR - Author level detail.
+   *     READER - Reader level detail.
    *
    * [optParams] - Additional query parameters
    */
@@ -154,19 +154,26 @@ class BlogsResource_ {
    * [role] - User access types for blogs to include in the results, e.g. AUTHOR will return blogs where the user has author level access. If no roles are specified, defaults to ADMIN and AUTHOR roles.
    *   Repeated values: allowed
    *   Allowed values:
-   *     ADMIN - Admin role - User has Admin level access.
-   *     AUTHOR - Author role - User has Author level access.
-   *     READER - Reader role - User has Reader level access.
+   *     ADMIN - Admin role - Blogs where the user has Admin level access.
+   *     AUTHOR - Author role - Blogs where the user has Author level access.
+   *     READER - Reader role - Blogs where the user has Reader level access (to a private blog).
+   *
+   * [status] - Blog statuses to include in the result (default: Live blogs only). Note that ADMIN access is required to view deleted blogs.
+   *   Default: LIVE
+   *   Repeated values: allowed
+   *   Allowed values:
+   *     DELETED - Blog has been deleted by an administrator.
+   *     LIVE - Blog is currently live.
    *
    * [view] - Access level with which to view the blogs. Note that some fields require elevated access.
    *   Allowed values:
-   *     ADMIN - Admin level detail
-   *     AUTHOR - Author level detail
-   *     READER - Reader level detail
+   *     ADMIN - Admin level detail.
+   *     AUTHOR - Author level detail.
+   *     READER - Reader level detail.
    *
    * [optParams] - Additional query parameters
    */
-  async.Future<BlogList> listByUser(core.String userId, {core.bool fetchUserInfo, core.List<core.String> role, core.String view, core.Map optParams}) {
+  async.Future<BlogList> listByUser(core.String userId, {core.bool fetchUserInfo, core.List<core.String> role, core.List<core.String> status, core.String view, core.Map optParams}) {
     var url = "users/{userId}/blogs";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -177,6 +184,10 @@ class BlogsResource_ {
       paramErrors.add("Allowed values for role: ADMIN, AUTHOR, READER");
     }
     if (role != null) queryParams["role"] = role;
+    if (status != null && !["DELETED", "LIVE"].contains(status)) {
+      paramErrors.add("Allowed values for status: DELETED, LIVE");
+    }
+    if (status != null) queryParams["status"] = status;
     if (userId == null) paramErrors.add("userId is required");
     if (userId != null) urlParams["userId"] = userId;
     if (view != null && !["ADMIN", "AUTHOR", "READER"].contains(view)) {
@@ -212,7 +223,7 @@ class CommentsResource_ {
   /**
    * Marks a comment as not spam.
    *
-   * [blogId] - The Id of the Blog.
+   * [blogId] - The ID of the Blog.
    *
    * [postId] - The ID of the Post.
    *
@@ -251,9 +262,9 @@ class CommentsResource_ {
   }
 
   /**
-   * Delete a comment by id.
+   * Delete a comment by ID.
    *
-   * [blogId] - The Id of the Blog.
+   * [blogId] - The ID of the Blog.
    *
    * [postId] - The ID of the Post.
    *
@@ -291,7 +302,7 @@ class CommentsResource_ {
   }
 
   /**
-   * Gets one comment by id.
+   * Gets one comment by ID.
    *
    * [blogId] - ID of the blog to containing the comment.
    *
@@ -466,7 +477,7 @@ class CommentsResource_ {
   /**
    * Marks a comment as spam.
    *
-   * [blogId] - The Id of the Blog.
+   * [blogId] - The ID of the Blog.
    *
    * [postId] - The ID of the Post.
    *
@@ -507,7 +518,7 @@ class CommentsResource_ {
   /**
    * Removes the content of a comment.
    *
-   * [blogId] - The Id of the Blog.
+   * [blogId] - The ID of the Blog.
    *
    * [postId] - The ID of the Post.
    *
@@ -606,9 +617,9 @@ class PagesResource_ {
       _client = client;
 
   /**
-   * Delete a page by id.
+   * Delete a page by ID.
    *
-   * [blogId] - The Id of the Blog.
+   * [blogId] - The ID of the Blog.
    *
    * [pageId] - The ID of the Page.
    *
@@ -642,7 +653,7 @@ class PagesResource_ {
   }
 
   /**
-   * Gets one blog page by id.
+   * Gets one blog page by ID.
    *
    * [blogId] - ID of the blog containing the page.
    *
@@ -695,9 +706,11 @@ class PagesResource_ {
    *
    * [blogId] - ID of the blog to add the page to.
    *
+   * [isDraft] - Whether to create the page as a draft (default: false).
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<Page> insert(Page request, core.String blogId, {core.Map optParams}) {
+  async.Future<Page> insert(Page request, core.String blogId, {core.bool isDraft, core.Map optParams}) {
     var url = "blogs/{blogId}/pages";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -705,6 +718,7 @@ class PagesResource_ {
     var paramErrors = new core.List();
     if (blogId == null) paramErrors.add("blogId is required");
     if (blogId != null) urlParams["blogId"] = blogId;
+    if (isDraft != null) queryParams["isDraft"] = isDraft;
     if (optParams != null) {
       optParams.forEach((key, value) {
         if (value != null && queryParams[key] == null) {
@@ -788,10 +802,53 @@ class PagesResource_ {
    *
    * [pageId] - The ID of the Page.
    *
+   * [publish] - Whether a publish action should be performed when the page is updated (default: false).
+   *
+   * [revert] - Whether a revert action should be performed when the page is updated (default: false).
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<Page> patch(Page request, core.String blogId, core.String pageId, {core.Map optParams}) {
+  async.Future<Page> patch(Page request, core.String blogId, core.String pageId, {core.bool publish, core.bool revert, core.Map optParams}) {
     var url = "blogs/{blogId}/pages/{pageId}";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (pageId == null) paramErrors.add("pageId is required");
+    if (pageId != null) urlParams["pageId"] = pageId;
+    if (publish != null) queryParams["publish"] = publish;
+    if (revert != null) queryParams["revert"] = revert;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "PATCH", body: request.toString(), urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Page.fromJson(data));
+  }
+
+  /**
+   * Publishes a draft page.
+   *
+   * [blogId] - The ID of the blog.
+   *
+   * [pageId] - The ID of the page.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Page> publish(core.String blogId, core.String pageId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/pages/{pageId}/publish";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
 
@@ -813,7 +870,44 @@ class PagesResource_ {
     }
 
     var response;
-    response = _client.request(url, "PATCH", body: request.toString(), urlParams: urlParams, queryParams: queryParams);
+    response = _client.request(url, "POST", urlParams: urlParams, queryParams: queryParams);
+    return response
+      .then((data) => new Page.fromJson(data));
+  }
+
+  /**
+   * Revert a published or scheduled page to draft state.
+   *
+   * [blogId] - The ID of the blog.
+   *
+   * [pageId] - The ID of the page.
+   *
+   * [optParams] - Additional query parameters
+   */
+  async.Future<Page> revert(core.String blogId, core.String pageId, {core.Map optParams}) {
+    var url = "blogs/{blogId}/pages/{pageId}/revert";
+    var urlParams = new core.Map();
+    var queryParams = new core.Map();
+
+    var paramErrors = new core.List();
+    if (blogId == null) paramErrors.add("blogId is required");
+    if (blogId != null) urlParams["blogId"] = blogId;
+    if (pageId == null) paramErrors.add("pageId is required");
+    if (pageId != null) urlParams["pageId"] = pageId;
+    if (optParams != null) {
+      optParams.forEach((key, value) {
+        if (value != null && queryParams[key] == null) {
+          queryParams[key] = value;
+        }
+      });
+    }
+
+    if (!paramErrors.isEmpty) {
+      throw new core.ArgumentError(paramErrors.join(" / "));
+    }
+
+    var response;
+    response = _client.request(url, "POST", urlParams: urlParams, queryParams: queryParams);
     return response
       .then((data) => new Page.fromJson(data));
   }
@@ -827,9 +921,13 @@ class PagesResource_ {
    *
    * [pageId] - The ID of the Page.
    *
+   * [publish] - Whether a publish action should be performed when the page is updated (default: false).
+   *
+   * [revert] - Whether a revert action should be performed when the page is updated (default: false).
+   *
    * [optParams] - Additional query parameters
    */
-  async.Future<Page> update(Page request, core.String blogId, core.String pageId, {core.Map optParams}) {
+  async.Future<Page> update(Page request, core.String blogId, core.String pageId, {core.bool publish, core.bool revert, core.Map optParams}) {
     var url = "blogs/{blogId}/pages/{pageId}";
     var urlParams = new core.Map();
     var queryParams = new core.Map();
@@ -839,6 +937,8 @@ class PagesResource_ {
     if (blogId != null) urlParams["blogId"] = blogId;
     if (pageId == null) paramErrors.add("pageId is required");
     if (pageId != null) urlParams["pageId"] = pageId;
+    if (publish != null) queryParams["publish"] = publish;
+    if (revert != null) queryParams["revert"] = revert;
     if (optParams != null) {
       optParams.forEach((key, value) {
         if (value != null && queryParams[key] == null) {
@@ -866,7 +966,7 @@ class PostUserInfosResource_ {
       _client = client;
 
   /**
-   * Gets one post and user info pair, by post id and user id. The post user info contains per-user information about the post, such as access rights, specific to the user.
+   * Gets one post and user info pair, by post ID and user ID. The post user info contains per-user information about the post, such as access rights, specific to the user.
    *
    * [userId] - ID of the user for the per-user information to be fetched. Either the word 'self' (sans quote marks) or the user's profile identifier.
    *
@@ -1005,9 +1105,9 @@ class PostsResource_ {
       _client = client;
 
   /**
-   * Delete a post by id.
+   * Delete a post by ID.
    *
-   * [blogId] - The Id of the Blog.
+   * [blogId] - The ID of the Blog.
    *
    * [postId] - The ID of the Post.
    *
@@ -1041,7 +1141,7 @@ class PostsResource_ {
   }
 
   /**
-   * Get a post by id.
+   * Get a post by ID.
    *
    * [blogId] - ID of the blog to fetch the post from.
    *
@@ -1334,13 +1434,13 @@ class PostsResource_ {
   }
 
   /**
-   * Publish a draft post.
+   * Publishes a draft post, optionally at the specific time of the given publishDate parameter.
    *
    * [blogId] - The ID of the Blog.
    *
    * [postId] - The ID of the Post.
    *
-   * [publishDate] - The date and time to schedule the publishing of the Blog.
+   * [publishDate] - Optional date and time to schedule the publishing of the Blog. If no publishDate parameter is given, the post is either published at the a previously saved schedule date (if present), or the current time. If a future date is given, the post will be scheduled to be published.
    *
    * [optParams] - Additional query parameters
    */
@@ -1525,7 +1625,7 @@ class UsersResource_ {
       _client = client;
 
   /**
-   * Gets one user by id.
+   * Gets one user by ID.
    *
    * [userId] - The ID of the user to get.
    *

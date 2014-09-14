@@ -32,6 +32,9 @@ class Blog {
   /** The API REST URL to fetch this resource from. */
   core.String selfLink;
 
+  /** The status of the blog. */
+  core.String status;
+
   /** RFC 3339 date-time when this blog was last updated. */
   core.String updated;
 
@@ -69,6 +72,9 @@ class Blog {
     }
     if (json.containsKey("selfLink")) {
       selfLink = json["selfLink"];
+    }
+    if (json.containsKey("status")) {
+      status = json["status"];
     }
     if (json.containsKey("updated")) {
       updated = json["updated"];
@@ -111,6 +117,9 @@ class Blog {
     }
     if (selfLink != null) {
       output["selfLink"] = selfLink;
+    }
+    if (status != null) {
+      output["status"] = status;
     }
     if (updated != null) {
       output["updated"] = updated;
@@ -780,6 +789,9 @@ class Page {
   /** The body content of this Page, in HTML. */
   core.String content;
 
+  /** Etag of the resource. */
+  core.String etag;
+
   /** The identifier for this resource. */
   core.String id;
 
@@ -814,6 +826,9 @@ class Page {
     }
     if (json.containsKey("content")) {
       content = json["content"];
+    }
+    if (json.containsKey("etag")) {
+      etag = json["etag"];
     }
     if (json.containsKey("id")) {
       id = json["id"];
@@ -853,6 +868,9 @@ class Page {
     }
     if (content != null) {
       output["content"] = content;
+    }
+    if (etag != null) {
+      output["etag"] = etag;
     }
     if (id != null) {
       output["id"] = id;
@@ -1041,7 +1059,7 @@ class PageList {
 class Pageviews {
 
   /** Blog Id */
-  core.int blogId;
+  core.String blogId;
 
   /** The container of posts in this blog. */
   core.List<PageviewsCounts> counts;
@@ -1052,7 +1070,7 @@ class Pageviews {
   /** Create new Pageviews from JSON data */
   Pageviews.fromJson(core.Map json) {
     if (json.containsKey("blogId")) {
-      blogId = (json["blogId"] is core.String) ? core.int.parse(json["blogId"]) : json["blogId"];
+      blogId = json["blogId"];
     }
     if (json.containsKey("counts")) {
       counts = json["counts"].map((countsItem) => new PageviewsCounts.fromJson(countsItem)).toList();
@@ -1135,6 +1153,9 @@ class Post {
   /** The JSON meta-data for the Post. */
   core.String customMetaData;
 
+  /** Etag of the resource. */
+  core.String etag;
+
   /** The identifier of this Post. */
   core.String id;
 
@@ -1152,6 +1173,9 @@ class Post {
 
   /** RFC 3339 date-time when this Post was published. */
   core.String published;
+
+  /** Comment control and display setting for readers of this post. */
+  core.String readerComments;
 
   /** The container of comments on this Post. */
   PostReplies replies;
@@ -1188,6 +1212,9 @@ class Post {
     if (json.containsKey("customMetaData")) {
       customMetaData = json["customMetaData"];
     }
+    if (json.containsKey("etag")) {
+      etag = json["etag"];
+    }
     if (json.containsKey("id")) {
       id = json["id"];
     }
@@ -1205,6 +1232,9 @@ class Post {
     }
     if (json.containsKey("published")) {
       published = json["published"];
+    }
+    if (json.containsKey("readerComments")) {
+      readerComments = json["readerComments"];
     }
     if (json.containsKey("replies")) {
       replies = new PostReplies.fromJson(json["replies"]);
@@ -1245,6 +1275,9 @@ class Post {
     if (customMetaData != null) {
       output["customMetaData"] = customMetaData;
     }
+    if (etag != null) {
+      output["etag"] = etag;
+    }
     if (id != null) {
       output["id"] = id;
     }
@@ -1262,6 +1295,9 @@ class Post {
     }
     if (published != null) {
       output["published"] = published;
+    }
+    if (readerComments != null) {
+      output["readerComments"] = readerComments;
     }
     if (replies != null) {
       output["replies"] = replies.toJson();

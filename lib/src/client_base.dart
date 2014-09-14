@@ -8,6 +8,7 @@ import "dart:convert";
 /**
  * Base class for all API clients, offering generic methods for HTTP Requests to the API
  */
+@deprecated
 abstract class ClientBase {
   String get basePath;
   String get rootUrl;
@@ -62,12 +63,13 @@ abstract class ClientBase {
 /**
  * Error thrown when the HTTP Request to the API failed
  */
+@deprecated
 class APIRequestError extends Error {
   final String message;
   APIRequestError([this.message]);
   String toString() => (message == null) ? "APIRequestException" : "APIRequestException: $message";
 }
-
+@deprecated
 class DetailedApiRequestError extends Error {
   final int statusCode;
   final String body;
